@@ -11,10 +11,13 @@ export default function AccountForm({ user }: { user: User | null }) {
   const supabase = createClient();
   const [loading, setLoading] = useState(true);
   const [fullname, setFullname] = useState<string | null>(null);
+  const [displayFullname, setDisplayFullname] = useState<string | null>(null);
   const [username, setUsername] = useState<string | null>(null);
+  const [displayUsername, setDisplayUsername] = useState<string | null>(null);
   const [filename, setFilename] = useState<string | null>(null);
   const [email, setEmail] = useState<string | null>(null);
   const [bio, setBio] = useState<string | null>(null);
+  const [displayBio, setDisplayBio] = useState<string | null>(null);
 
   const getProfile = useCallback(async () => {
     try {
@@ -32,11 +35,14 @@ export default function AccountForm({ user }: { user: User | null }) {
       }
 
       if (data) {
-        setFullname(data.fullname); // # TODO: Match with my DB columns
-        setUsername(data.username);
         setFilename(data.filename);
         setEmail(data.email);
-        setBio(data.bio);
+        setDisplayFullname(data.fullname);
+        setDisplayUsername(data.username);
+        setDisplayBio(data.bio);
+        setFullname('');
+        setUsername('');
+        setBio('');
       }
     } catch (error) {
       alert('Error loading user data!');
@@ -58,17 +64,24 @@ export default function AccountForm({ user }: { user: User | null }) {
     try {
       setLoading(true);
 
-      const { error } = await supabase.from('users').upsert({
-        id: user?.id as string,
-        fullname: fullname,
-        username: username,
-        bio: bio,
-      })
-      if (error) throw error
-      alert('Profile updated!');
-    } catch (error) {
+      const { error } = await supabase.from('users').update({ fullname: fullname, username: username, bio: bio }).eq('email', user?.email).select();
+
+      if (error){
+        throw error;
+      }
+      setDisplayFullname(fullname);
+      setDisplayUsername(username);
+      setDisplayBio(bio);
+      setFullname('');
+      setUsername('');
+      setBio('');
+      alert('Profile updated!'); // # TODO: Remove?
+    } 
+    catch (error) {
       alert('Error updating the data!');
-    } finally {
+      console.log(error);
+    } 
+    finally {
       setLoading(false);
     }
   }
@@ -84,7 +97,7 @@ export default function AccountForm({ user }: { user: User | null }) {
 
       <div>
         <div>
-          <h1>{username}</h1>
+          <h1>{displayUsername}</h1>
         </div>
 
         <div>
@@ -94,7 +107,7 @@ export default function AccountForm({ user }: { user: User | null }) {
         <div>
           <div>
             <h4> Name </h4>
-            <p>{fullname}</p>
+            <p>{displayFullname}</p>
           </div>
 
           <div>
@@ -104,12 +117,12 @@ export default function AccountForm({ user }: { user: User | null }) {
           
           <div>
             <h4>Bio</h4>
-            <p>{bio}</p>
+            <p>{displayBio}</p>
           </div>
         </div>
       </div>
 
-      <div>
+      <div className='text-gray-600'>
         <div>
           <label htmlFor="fullName">Full Name</label>
           <input id="fullName" type="text" value={fullname || ''} onChange={(e) => setFullname(e.target.value)}/>

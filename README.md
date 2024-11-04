@@ -16,21 +16,18 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## About this project
 
-## Learn More
+I'm creating a social media application (modeled after instagram) with authenticated (password protected) users, image posts, post comments, post likes, comment likes, followers and following behaviors, and user profiles with pfp and basic personal info.
 
-To learn more about Next.js, take a look at the following resources:
+I'll use NextJS to do the front-end, and then connect to a remote-hosted Supabase backend (which I'll use for my database and user authentication). 
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Pages are protected by user (only a user can access their own resources), and API requests to the DB are also protected by RLS (Row Level Security) Policies.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The end result will be containerized using Docker and deployed via Fly.io.
 
-## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Goals
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The Primary goal of this project is to gain experience with full-stack development, which emphasis on leveraging modern tech stacks for fast-paced development. Supabase (along with similar services, such as Google's Firebase or Pocketbase) does a lot of the backend configuration behind the scenes, allowing me as a developoer to integrate a backend into my project relatively quickly. This has allowed me to spend more time improving security practices and making the project more robust as a whole.

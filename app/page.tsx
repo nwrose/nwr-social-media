@@ -1,22 +1,16 @@
 import Feed from "@/components/feed";
 import { redirect } from "next/navigation";
-import { cookies } from "next/headers";
 import { createClient } from "@/utils/supabase/server";
 import Link from "next/link";
 
 const Home:React.FC = async () => {
-    const cookieStore = cookies();
-    const supabase = createClient(cookieStore);
-
+    const supabase = await createClient();
+    
     const { data: { user } } = await supabase.auth.getUser();
     if(!user) {
         redirect('/accounts/login/');
     }
-
-    const editRedirect = () => {
-        redirect('/accounts/edit');
-    }
-
+    
     return (
         <div>
             SUCCESSFUL LOGIN for user, NOW DISPLAYING FEED

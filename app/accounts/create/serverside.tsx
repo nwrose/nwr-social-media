@@ -2,16 +2,13 @@
 
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { NextResponse } from "next/server";
 import { writeFile } from "fs/promises";
 import path from "path";
 
 
-export const CreateServerside = async (formData: FormData) => {
-  const cookieStore = cookies();
-  const supabase = createClient(cookieStore);
+export default async function CreateServerside(formData: FormData) {
+  const supabase = await createClient();
 
   const name = formData.get("name") as string;
   const username = formData.get("username") as string;
@@ -56,16 +53,15 @@ export const CreateServerside = async (formData: FormData) => {
     redirect("/error");
   }
 
-  const uuid = (await supabase.auth.getUser()).data.user?.id;  // Yeesh --> debug?
-  console.log("\n The current uuid is: ", uuid, "\n");
-
   // send name, username, email, pfp-filename data to users table in DB
   {
-    const { data, error } = await supabase.from('users').insert(
-      [{ username: username }, { fullname: name }, { email: email }, { filename: filename }, { uuid: uuid }]
-    ).select()
+    const { data, error } = await supabase.from('users').insert({
+      username: username,
+      fullname: name,
+      email: email,
+      filename: filename,
+    }).select()
 
-    // DEBUG --> potential type issue with uuid
     if(error){
       console.log("error while inserting user into users table:", error);
       redirect('/errror');
@@ -76,7 +72,5 @@ export const CreateServerside = async (formData: FormData) => {
   }
 
   revalidatePath('/', 'layout');
-  redirect('/');
+  redirect('/accounts/edit');
 };
-
-export default CreateServerside;

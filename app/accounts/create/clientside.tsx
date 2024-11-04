@@ -78,14 +78,14 @@ const CreateClientside: React.FC<CreateAccountProps> = ({ handleSubmit }) => {
             </p>
             <div>
                 <div>Create Account</div>
-                <form onSubmit={handleFormSubmit}>
+                <form className="text-gray-600">
                     <p>Full Name</p><input type="text" name="name" placeholder="Full Name"  required/>
                     <p>Username</p><input type="text" name="username" placeholder="Username" required/>
                     <p>Profile Picture</p><input type="file" name="pfp" required/>
                     <p>Email</p><input type="email" name="email" placeholder="Email" required/>
                     <p>Password</p><input type="password" name="password" placeholder="Password" onFocus={handlePasswordFocus} onBlur={handlePasswordBlur} onChange={handlePasswordValidation} pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters" required/>
                     <p>Confirm Password</p><input type="password" name="confirmPassword" placeholder="Confirm Password" required/>
-                    <button type="submit">Create Account</button>
+                    <button formAction={handleSubmit}>Create Account</button>
                 </form>
                 <div id="message" ref={msgRef} className="hidden">
                 <h3>Password must contain the following:</h3>

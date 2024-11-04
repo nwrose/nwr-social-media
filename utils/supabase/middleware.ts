@@ -1,15 +1,11 @@
-import { createServerClient, type CookieOptions } from "@supabase/ssr";
-import { promises } from "dns";
-import { requestToBodyStream } from "next/dist/server/body-streams";
-import { type NextRequest, NextResponse } from "next/server";
+import { createServerClient } from "@supabase/ssr";
+import { NextResponse, type NextRequest } from "next/server";
 
 
-export const middleware = (request: NextRequest) => {
+export async function updateSession(request: NextRequest){
   // Create an unmodified response
   let supabaseResponse = NextResponse.next({
-    request: {
-      headers: request.headers,
-    },
+    request,
   });
 
   const supabase = createServerClient(
@@ -32,6 +28,9 @@ export const middleware = (request: NextRequest) => {
       },
     },
   );
+
+  // refreshing auth token
+  await supabase.auth.getUser();
   
   return supabaseResponse
 };

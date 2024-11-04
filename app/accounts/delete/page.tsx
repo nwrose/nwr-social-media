@@ -1,14 +1,22 @@
+import { redirect } from "next/navigation";
 
-const Delete:React.FC = () => {
+import { createClient } from "@/utils/supabase/server";
+import { deleteAccount } from "./actions";
+
+export default async function Delete(){
+    const supabase = await createClient();
+    const { data: { user }, } = await supabase.auth.getUser();
+    if(!user){
+      redirect('/accounts/login');
+    }
+
     return(
         <>
         <div>
-            Delete page idk
+            <p>Confirm Delete Account</p>
+            <p>WARNING: This action CANNOT be undone</p>
+            <button formAction={deleteAccount} className="bg-red">DELETE ACCOUNT</button>
         </div>
         </>
     )
 }
-
-
-
-export default Delete;

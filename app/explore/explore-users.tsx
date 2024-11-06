@@ -68,9 +68,6 @@ const Explore:React.FC<ExploreProps> = ({user, handleFollow}) => {
         } 
         else{
             followingList = followingUsernames.map(f => f.username as string); // either the list or empty array
-
-            console.log("followingList: ", followingList); // for debugging
-
             followingString = '(';
             for(let i = 0; i < followingList.length - 1; ++i){
                 followingString += followingList[i] + ', ';
@@ -78,14 +75,10 @@ const Explore:React.FC<ExploreProps> = ({user, handleFollow}) => {
             followingString += followingList[followingList.length - 1] + ')';
         }
 
-        // DEBUG CHECK
-        console.log("followingString: ", followingString);
-        console.log("followingList Length: ", followingList.length);
-
         // get all users not in this list from DB
         const {data, error, status} = followingString === "()"
-        ? await supabase.from('users').select('username, filename')
-        : await supabase.from('users').select('username, filename').not('username', 'in', followingString);
+        ? await supabase.from('users').select('username, filename').neq('uuid', user.id)
+        : await supabase.from('users').select('username, filename').not('username', 'in', followingString).neq('uuid', user.id);
         if(error){
             console.log('error with explore query:', error);
             throw(followingError);
@@ -117,20 +110,22 @@ const Explore:React.FC<ExploreProps> = ({user, handleFollow}) => {
 
     return (
     <>
-        <div className="h-screen flex flex-col items-center">
-            <h2 className="py-10"> 
+        <div className="h-screen flex flex-col items-center w-screen">
+            <h2 className="py-10 text-6xl font-bold"> 
                 Explore 
             </h2>
-            <div className="flex flex-col justify-around items-center">
+            <div className="flex flex-col justify-around items-center w-[100%]">
                 {   
                     exploreList?.map((newUser) => (
-                        <div key={newUser.username}>
-                            <form>
-                                <div>
-                                    <Image src={`/pfps/${newUser.filename}`} alt={`${newUser.username}'s pfp`} width={500} height={500}/>
-                                </div>
-                                <div>
-                                    <p>{newUser.username}</p>
+                        <div key={newUser.username} className='w-[30%] shadow-xl'>
+                            <form className='flex justify-between items-center px-4 w-[100%]'>
+                                <div className='flex items-center'>
+                                    <div>
+                                        <Image src={`/pfps/${newUser.filename}`} alt={`${newUser.username}'s pfp`} width={50} height={50} className='rounded-full'/>
+                                    </div>
+                                    <div className='text-3xl font-bold px-4'>
+                                        <p>{newUser.username}</p>
+                                    </div>
                                 </div>
                                 <div>
                                     <input type='hidden' value={newUser.username} name='username'></input>

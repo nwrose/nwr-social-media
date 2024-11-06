@@ -11,7 +11,7 @@ interface ExploreProps {
     user: User | null;
 }
 
-const Explore:React.FC<ExploreProps> = async ({user, handleFollow}) => {
+const Explore:React.FC<ExploreProps> = ({user, handleFollow}) => {
     const [reload, setReload] = useState(0);
     const [loading, setLoading] = useState(false);
     const [exploreList, setExploreList] = useState<{ username: string; filename: string }[]>([]);
@@ -26,7 +26,10 @@ const Explore:React.FC<ExploreProps> = async ({user, handleFollow}) => {
     Handle Follow Action on the page
     */
     const clientHandleFollow = async (formData: FormData) =>{
-        if(loading) return;
+        if(loading){
+            alert("Double click? ignoring extra request");
+            return;
+        } 
         setLoading(true); // TODO: Localize loading behavior to individual accounts
 
         // update page client side without full page reload / requerying DB
@@ -121,7 +124,7 @@ const Explore:React.FC<ExploreProps> = async ({user, handleFollow}) => {
             <div className="flex flex-col justify-around items-center">
                 {   
                     exploreList?.map((newUser) => (
-                        <div>
+                        <div key={newUser.username}>
                             <form>
                                 <div>
                                     <Image src={`/pfps/${newUser.filename}`} alt={`${newUser.username}'s pfp`} width={500} height={500}/>
@@ -130,6 +133,7 @@ const Explore:React.FC<ExploreProps> = async ({user, handleFollow}) => {
                                     <p>{newUser.username}</p>
                                 </div>
                                 <div>
+                                    <input type='hidden' value={newUser.username} name='username'></input>
                                     <button disabled={loading} formAction={clientHandleFollow}>Follow</button>
                                 </div>
                             </form>

@@ -11,7 +11,7 @@ export async function followUser(username: String){
     }
 
     // send request to DB to insert username into following table
-    const {error, status} = await supabase.from('following').insert(username);
+    const {error, status} = await supabase.from('following').insert({username});
 
     if(error && status !== 406){
         console.log("error folllowing user from explore page:", error);

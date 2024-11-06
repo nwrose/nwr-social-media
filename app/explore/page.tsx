@@ -12,7 +12,7 @@ export default async function ExplorePage(){
 
     const handleFollow = async (formData: FormData) => {
         "use server"
-        
+
         const username = formData.get('username') as string;
         const success = await followUser(username);
         return success;

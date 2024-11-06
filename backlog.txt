@@ -1,0 +1,11 @@
+*This seems more convenient than a more robust backlog app if I'm doing solo development.
+
+Item1: Fix username creation/update to ensure all usernames are unique --> necessary for follower/following relationships
+
+Item2: Fix query for Followers
+
+Item3: Add more localized behavior to the loading for explore-users.tsx (only block one submit button while loading instead of all)
+
+Item4: Similarly, /explore/actions.ts should possibly not exist, it seems to unnecessarily complicate explore when it has only one function
+
+Item5: Delete requests 

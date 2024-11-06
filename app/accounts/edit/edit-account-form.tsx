@@ -8,7 +8,6 @@ import Image from 'next/image';
 // ...
 
 export default function AccountForm({ user }: { user: User | null }) {
-  const supabase = createClient();
   const [loading, setLoading] = useState(true);
   const [fullname, setFullname] = useState<string | null>(null);
   const [displayFullname, setDisplayFullname] = useState<string | null>(null);
@@ -18,6 +17,8 @@ export default function AccountForm({ user }: { user: User | null }) {
   const [email, setEmail] = useState<string | null>(null);
   const [bio, setBio] = useState<string | null>(null);
   const [displayBio, setDisplayBio] = useState<string | null>(null);
+
+  const supabase = createClient();
 
   const getProfile = useCallback(async () => {
     try {

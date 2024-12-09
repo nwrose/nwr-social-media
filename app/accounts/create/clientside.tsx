@@ -3,7 +3,7 @@
 import React, { useRef } from "react";
 
 interface CreateAccountProps {
-    handleSubmit: (formData: FormData) => Promise<void>;
+    handleSubmit:(formData: FormData) => Promise<void>;
 }
 
 const CreateClientside: React.FC<CreateAccountProps> = ({ handleSubmit }) => {

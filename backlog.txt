@@ -1,4 +1,6 @@
-*This seems more convenient than a more robust backlog app if I'm doing solo development.
+*This seems more convenient than a more robust backlog app if I'm doing solo development. 
+
+ITEM 0: URGENT --> Fix Login/Create to instalogin if already signed in !!!
 
 Item1: Fix username creation/update to ensure all usernames are unique --> necessary for follower/following relationships
 
@@ -6,6 +8,30 @@ Item2: Fix query for Followers
 
 Item3: Add more localized behavior to the loading for explore-users.tsx (only block one submit button while loading instead of all)
 
-Item4: Similarly, /explore/actions.ts should possibly not exist, it seems to unnecessarily complicate explore when it has only one function
+Item5: Delete requests
 
-Item5: Delete requests 
+Item6: consider merging 'users/[username]' and 'accounts/edit' pages for current user --> users page calls same clientside form if edit is requested
+  
+Item7: Make Created date more readable in users/[username]/page.tsx
+
+Item8: instead of complex queries or querying db multiple times for one page's data, use views:
+		--> CREATE: Main Feed query
+		--> CREATE: Mutuals query for users/[username] page
+		--> EDIT: Order "explore" query by "mutuals_count"
+
+Item9: Add follow button to profiles in explore,followers,following,users/[username] pages that is not rendered when username matches the current user
+Item9.5: Make a client component for Usercard with a follow user function to be used in explore, following, followers pages --> all look the same, work the same
+
+Item 10: Add captions to the posts (requires small modification to the DB and the queries involving retrieving posts
+
+Item 11: Add double click to like feature
+
+Item 12: Add infinite scroll to main feed rather than loading ALL posts in the feed at once
+
+Item 13: Change Explore to something more like "find new friends" and have it order results by shared friends and display "you have X friends in common" thing
+
+Item 14: Add "followed by ___, ___, and X others" to the user profile page (show mutuals)  
+
+Item 15: Add a SQL folder with the schema and functions that I'm using to allow replication via github
+
+

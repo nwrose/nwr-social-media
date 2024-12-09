@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
 import { type User } from '@supabase/supabase-js';
 import Image from 'next/image';
+import Link from 'next/link'
 
 interface ExploreProps {
     handleFollow: (formData: FormData) => Promise<boolean>;
@@ -49,6 +50,13 @@ const Explore:React.FC<ExploreProps> = ({user, handleFollow}) => {
     try{
         setLoading(true);
 
+        // use explore list rpc to get users I have not yet followed
+        const {data, error, status} = await supabase.rpc("get_explore", { in_uuid: user.id });
+        if(error && status !== 406){
+            console.log("error during explore query:", error);
+            throw(error);
+        }
+/*
         // get all users current user follows
         const {data:followingUsernames, error:followingError} = await supabase
             .from('following')
@@ -83,7 +91,7 @@ const Explore:React.FC<ExploreProps> = ({user, handleFollow}) => {
             console.log('error with explore query:', error);
             throw(followingError);
         }
-
+*/
         // Assuming data is fetched and available --> get users not yet following
         const notFollowingList = data.map((user: { username: string; filename: string }) => ({
             username: user.username,
@@ -114,20 +122,20 @@ const Explore:React.FC<ExploreProps> = ({user, handleFollow}) => {
             <h2 className="py-10 text-6xl font-bold"> 
                 Explore 
             </h2>
-            <div className="flex flex-col justify-around items-center w-[100%]">
+            <div className="flex flex-col justify-start py-10 items-center w-[100%]">
                 {   
                     exploreList?.map((newUser) => (
-                        <div key={newUser.username} className='w-[30%] shadow-xl'>
-                            <form className='flex justify-between items-center px-4 w-[100%]'>
-                                <div className='flex items-center'>
+                        <div key={newUser.username} className='w-[40%] shadow-xl p-1 my-5 bg-white-'>
+                            <form className='flex justify-between items-center w-[100%]'>
+                                <Link href={`/users/${newUser.username}`} className='flex items-center'>
                                     <div>
                                         <Image src={`/pfps/${newUser.filename}`} alt={`${newUser.username}'s pfp`} width={50} height={50} className='rounded-full'/>
                                     </div>
                                     <div className='text-3xl font-bold px-4'>
                                         <p>{newUser.username}</p>
                                     </div>
-                                </div>
-                                <div>
+                                </Link>
+                                <div className='px-4'>
                                     <input type='hidden' value={newUser.username} name='username'></input>
                                     <button disabled={loading} formAction={clientHandleFollow}>Follow</button>
                                 </div>

@@ -1,8 +1,9 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import Image from "next/image";
 
-export default async function FollowersPage(){
+export default async function FollowersPage({ params }: { params: { username: string }}){
     const supabase = await createClient();
 
     // verify user logged in 
@@ -12,10 +13,7 @@ export default async function FollowersPage(){
     }
 
     // query DB for followerslist (uuid, username, and pfp-filename)
-    const {data, error, status} = await supabase
-        .from('users')
-        .select('filename, username, following!inner(username)')
-        .eq('following.uuid', user?.id);
+    const {data, error, status} = await supabase.rpc("get_followers", { in_username: params.username });
     if(error && status !== 406){
         console.log("error during followers query:", error);
         redirect('/error');
@@ -29,15 +27,15 @@ export default async function FollowersPage(){
             </h2>
             <div className="flex flex-col justify-around items-center">
                 {
-                    data?.map((follower) => (
-                        <div>
+                    data?.map((follower: {filename: string; username: string}) => (
+                        <Link href={`/users/${follower.username}`} key={follower.username} className="flex items-center">
                             <div>
-                                <Image src={`/pfps/${follower.filename}`} alt={`${follower.username}'s pfp`} width={500} height={500}/>
+                                <Image src={`/pfps/${follower.filename}`} alt={`${follower.username}'s pfp`} width={50} height={50} className="rounded-full"/>
                             </div>
                             <p>
                                 {follower.username}
                             </p>
-                        </div>
+                        </Link>
                     ))
                 }
             </div>

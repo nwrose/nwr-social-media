@@ -9,6 +9,15 @@ export default async function Account() {
   if(!user){
     redirect('/accounts/login');
   }
+
+  const handlePost = async (formData: FormData) => {
+    
+  }
   
-  return <AccountForm user={user} />
+  return (
+  <>
+    <div>
+      <AccountForm user={user} />
+    </div>
+  </>)  
 }

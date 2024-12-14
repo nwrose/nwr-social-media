@@ -10,6 +10,9 @@ export default async function ExplorePage(){
         redirect('/accounts/login');
     }
 
+    const {data, error, status} = await supabase.from('users').select('username').eq('uuid', user.id).single();
+    const username:string = data?.username;
+
     const handleFollow = async (formData: FormData) => {
         "use server"
 
@@ -21,7 +24,7 @@ export default async function ExplorePage(){
     return (
     <>
         <div>
-            <Explore user={user} handleFollow={handleFollow}/>
+            <Explore username={username} user={user} handleFollow={handleFollow}/>
         </div>
     </>
     )

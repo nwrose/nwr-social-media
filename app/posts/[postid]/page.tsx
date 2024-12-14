@@ -1,10 +1,9 @@
 import { createClient } from "@/utils/supabase/server"
 import { redirect } from "next/navigation";
-import { Likes, Comments } from "@/app/components";
+import { Likes, Comments, Sidebar, PFP} from "@/app/components";
+import { formatDistanceToNow } from 'date-fns';
 import Image from "next/image";
-import { lchown } from "fs";
-import { UUID } from "crypto";
-import { comment } from "postcss";
+import Link from "next/link";
 
 export default async function showPost({ params }: { params: { postid: string }}){
     const supabase = await createClient();
@@ -13,47 +12,6 @@ export default async function showPost({ params }: { params: { postid: string }}
     const { data: { user }, } = await supabase.auth.getUser();
     if(!user){
         redirect('/accounts/login');
-    }
-
-    const {data, error, status} = await supabase.rpc("get_post_info", {in_postid: Number(params.postid)});
-    if(error && status !== 406){
-        console.log("error while retrieving post with postid: ", params.postid.toString(), "\n", error);
-        redirect('/error');
-    }
-
-    // retrieve likeCount and isLiked for post before rendering it
-    let likeCount: number;
-    let isLiked: boolean = false;
-    {
-        const {data, error, status} = await supabase.from("likes").select("uuid").eq("postid", Number(params.postid));
-        if(error && status !== 406){
-            console.log("error while retrieving post likes for post with postid ", params.postid, "\n", error);
-            redirect('/error');
-        }
-
-        data?.map((val) => {
-            if(val.uuid === user.id){
-                isLiked = true;
-            }
-        });
-        likeCount = data?.length || 0;
-    }
-
-    // retrieve list of comments for this post
-    let commentList: { username: string, created: string, text: string, commentid: number }[] = [];
-    {
-        const {data, error, status} = await supabase.rpc("get_comments", {in_postid: Number(params.postid)});
-        if(error && status !== 406){
-            console.log("error while retrieving post comments for post with postid ", params.postid, "\n", error);
-            redirect('/error');
-        }
-
-        if(data){
-            commentList = data.map((val: { commentid: number, username: string, created: string, text: string}) => (
-                {username: val.username, created: val.created, text: val.text, commentid: val.commentid}
-            ));
-        } 
-
     }
 
     // get current user's username
@@ -66,24 +24,50 @@ export default async function showPost({ params }: { params: { postid: string }}
         }
         username = data?.username;
     }
-    
+
+    // get the necessary data for this post
+    const {data, error, status} = await supabase.rpc("get_post_info", {in_postid: Number(params.postid)});
+    if(error && status !== 406){
+        console.log("error while retrieving post with postid: ", params.postid.toString(), "\n", error);
+        redirect('/error');
+    }
+    const post_data: {
+        post_filename: string,
+        created: string,
+        username: string,
+        pfp_filename: string,
+        comments: Array<{commentid: number; text:string; created:string; username:string;}>,
+        likes: Array<{uuid: string; username:string;}>
+    } = data?.[0];
+
+    // get like variables
+    const likeCount = post_data.likes?.length || 0;
+    let isLiked: boolean = post_data.likes?.findIndex((like) => like.username === username) >= 0
+
 
     return(<>
-    <div className="flex flex-col items-center">
-        <div>
-            <div>
-                <p>{data?.[0].username}</p>
-                <p>{data?.[0].created}</p>
+    <div className="flex w-[100%]">
+        <Sidebar username={username}/>
+        <div className="w-[60%] flex justify-center">
+            <div className="flex flex-col items-center w-[800px] shadow-lg p-4">
+                <div className="w-[100%] flex justify-between items-center">
+                    <div className="flex items-center">
+                        <PFP filename={post_data.pfp_filename}/>
+                        <Link href={`/users/${post_data.username}`}>
+                            {post_data.username}
+                        </Link>
+                    </div>
+                    <div className="flex items-center">
+                        {formatDistanceToNow(new Date(post_data.created), {addSuffix: true})}
+                    </div>
+                </div>
+                <Image src={`/posts/${post_data.post_filename}`} alt="failed to load post" width={800} height={800}/>
+                <Likes in_LikeCount={likeCount} in_isLiked={isLiked} postid={Number(params.postid)}/>
+                <Comments in_commentList={post_data.comments || []} postid={Number(params.postid)} username={username} />
             </div>
-            <Image src={`/posts/${data?.[0].filename}`} alt="failed to load post" width={500} height={500}/>
         </div>
+        <div className="w-[20%] bg-green-100">
 
-        <div>
-            <Likes in_LikeCount={likeCount} in_isLiked={isLiked} postid={Number(params.postid)}/>
-        </div>
-
-        <div>
-            <Comments in_commentList={commentList} postid={Number(params.postid)} username={username} />
         </div>
     </div>
     </>)

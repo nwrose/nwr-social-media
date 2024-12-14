@@ -34,4 +34,9 @@ Item 14: Add "followed by ___, ___, and X others" to the user profile page (show
 
 Item 15: Add a SQL folder with the schema and functions that I'm using to allow replication via github
 
+Item 16: Add a Search Function to the right hand side of the screen in explore to search for users by name
 
+Item 17: Add hashtag support
+	--> Hashtags in posts
+	--> hashtags in search function
+	--> Pull up a feed of posts with the a given hashtag

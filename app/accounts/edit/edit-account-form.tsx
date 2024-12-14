@@ -88,66 +88,60 @@ export default function AccountForm({ user }: { user: User | null }) {
   }
 
   return (
-    <div>
-        {/*  -- COMMENTS --
+    <div className='w-[80%] flex'>
+      <div className='w-[50%] flex flex-col items-center'>
         <div>
-            <label htmlFor="email">Email</label>
-            <input id="email" type="text" value={user?.email} disabled/>
+          <Image src={`/pfps/${filename}`} width={200} height={200} alt="Loading..." decoding='async' className='rounded-full'/>
         </div>
-        */}
-
-      <div>
-        <div>
+        <div className='text-2xl my-2'>
           <h1>{displayUsername}</h1>
         </div>
-
-        <div>
-          <Image src={`/pfps/${filename}`} width={500} height={500} alt="Loading..." decoding='async'/>
-        </div>
-
-        <div>
+        <div className='my-4 space-y-4 w-[75%] flex flex-col'>
           <div>
-            <h4> Name </h4>
+            <h4> Name: </h4>
             <p>{displayFullname}</p>
           </div>
-
           <div>
-            <h4> Email </h4>
+            <h4> Email: </h4>
             <p>{email}</p>
           </div>
-          
           <div>
-            <h4>Bio</h4>
+            <h4>Bio:</h4>
             <p>{displayBio}</p>
           </div>
         </div>
       </div>
 
-      <div className='text-gray-600'>
-        <div>
-          <label htmlFor="fullName">Full Name</label>
-          <input id="fullName" type="text" value={fullname || ''} onChange={(e) => setFullname(e.target.value)}/>
-        </div>
+      <div className='text-gray-600 w-[50%] flex flex-col items-center space-y-4 bg-green-100 justify-around'>
+        <div className='space-y-2 w-[75%] flex flex-col pb-4'>
+          <h1 className='w-[100%] flex justify-center pb-4 text-2xl'>
+            Update Account Info
+          </h1>
+          <div className='flex flex-col items-center pb-4'>
+            <label htmlFor="fullName">Full Name</label>
+            <input id="fullName" type="text" value={fullname || ''} onChange={(e) => setFullname(e.target.value)}/>
+          </div>
 
-        <div>
-          <label htmlFor="username">Username</label>
-          <input id="username" type="text" value={username || ''} onChange={(e) => setUsername(e.target.value)}/>
-        </div>
+          <div className='flex flex-col items-center pb-4'>
+            <label htmlFor="username">Username</label>
+            <input id="username" type="text" value={username || ''} onChange={(e) => setUsername(e.target.value)}/>
+          </div>
 
-        <div>
-          <label htmlFor="bio">Bio</label>
-          <input id="bio" type="text" value={bio || ''} onChange={(e) => setBio(e.target.value)}/>
-        </div>
+          <div className='flex flex-col items-center'>
+            <label htmlFor="bio">Bio</label>
+            <textarea id="bio" value={bio || ''} onChange={(e) => setBio(e.target.value)} className="w-[100%] p-2 rounded-lg overflow-hidden resize-none"/>
+          </div>
 
-        <div>
-          <button onClick={() => updateProfile({ username, fullname, bio })} disabled={loading} >
-            {loading ? 'Loading ...' : 'Update'}
-          </button>
+          <div className='w-[100%] flex justify-center items-center text-2xl'>
+            <button onClick={() => updateProfile({ username, fullname, bio })} disabled={loading} className='rounded hover:bg-green-300 p-1'>
+              {loading ? 'Loading ...' : 'Update'}
+            </button>
+          </div>
         </div>
 
         <div>
           <form action="/auth/signout" method="post">
-            <button type="submit">
+            <button type="submit" className='bg-red-300 border-2 border-black rounded p-1'>
               Sign out
             </button>
           </form>

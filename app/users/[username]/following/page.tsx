@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
+import { Sidebar } from "@/app/components";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -12,6 +13,13 @@ export default async function FollowersPage({ params }: { params: { username: st
         redirect('/accounts/login');
     }
 
+    // fetch current username
+    let username:string;
+    {
+        const {data, error, status} = await supabase.from('users').select('username').eq('uuid', user.id).single();
+        username = data?.username;
+    }
+
     // query DB for followerslist (uuid, username, and pfp-filename)
     const {data, error, status} = await supabase.rpc("get_following", { in_username: params.username });
     if(error && status !== 406){
@@ -21,10 +29,12 @@ export default async function FollowersPage({ params }: { params: { username: st
 
     return(
     <>
-        <div className="h-screen flex flex-col items-center">
-            <h2 className="py-10"> 
+    <div className="flex w-[screen] min-h-screen">
+        <Sidebar username={username}/>
+        <div className="flex flex-col items-center w-[60%]">
+            <h1 className="py-10"> 
                 Following
-            </h2>
+            </h1>
             <div className="flex flex-col justify-around items-center">
                 {
                     data?.map((follower: {filename: string; username: string}) => (
@@ -40,6 +50,14 @@ export default async function FollowersPage({ params }: { params: { username: st
                 }
             </div>
         </div>
+        <div className="w-[20%]">
+            <Link href={`/users/${params.username}`}>
+                <button className="m-10 bg-red-100 rounded border-2 hover:border-black hover:ease-in-out hover:text-gray-400">
+                    Return to {params.username}'s profile
+                </button>
+            </Link>
+        </div>
+    </div>
     </>
     );
 }

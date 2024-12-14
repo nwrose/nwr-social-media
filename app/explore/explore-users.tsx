@@ -4,15 +4,18 @@ import { useCallback, useEffect, useState } from 'react';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
 import { type User } from '@supabase/supabase-js';
+import { Sidebar } from '@/app/components'
 import Image from 'next/image';
-import Link from 'next/link'
+import Link from 'next/link';
+
 
 interface ExploreProps {
     handleFollow: (formData: FormData) => Promise<boolean>;
     user: User | null;
+    username: string;
 }
 
-const Explore:React.FC<ExploreProps> = ({user, handleFollow}) => {
+const Explore:React.FC<ExploreProps> = ({username, user, handleFollow}) => {
     const [reload, setReload] = useState(0);
     const [loading, setLoading] = useState(false);
     const [exploreList, setExploreList] = useState<{ username: string; filename: string }[]>([]);
@@ -56,42 +59,7 @@ const Explore:React.FC<ExploreProps> = ({user, handleFollow}) => {
             console.log("error during explore query:", error);
             throw(error);
         }
-/*
-        // get all users current user follows
-        const {data:followingUsernames, error:followingError} = await supabase
-            .from('following')
-            .select('username')
-            .eq('uuid', user.id);
-        if(followingError){
-            console.log("error fetching list of users current user follows:", followingError);
-            throw(followingError);
-        }
 
-        // put list into string format for DB query
-        let followingList:Array<String>; 
-        let followingString:String;
-        if(followingUsernames.length ==0 ){
-            followingList = [];
-            followingString = "()";
-        } 
-        else{
-            followingList = followingUsernames.map(f => f.username as string); // either the list or empty array
-            followingString = '(';
-            for(let i = 0; i < followingList.length - 1; ++i){
-                followingString += followingList[i] + ', ';
-            }
-            followingString += followingList[followingList.length - 1] + ')';
-        }
-
-        // get all users not in this list from DB
-        const {data, error, status} = followingString === "()"
-        ? await supabase.from('users').select('username, filename').neq('uuid', user.id)
-        : await supabase.from('users').select('username, filename').not('username', 'in', followingString).neq('uuid', user.id);
-        if(error){
-            console.log('error with explore query:', error);
-            throw(followingError);
-        }
-*/
         // Assuming data is fetched and available --> get users not yet following
         const notFollowingList = data.map((user: { username: string; filename: string }) => ({
             username: user.username,
@@ -118,31 +86,37 @@ const Explore:React.FC<ExploreProps> = ({user, handleFollow}) => {
 
     return (
     <>
-        <div className="h-screen flex flex-col items-center w-screen">
-            <h2 className="py-10 text-6xl font-bold"> 
-                Explore 
-            </h2>
-            <div className="flex flex-col justify-start py-10 items-center w-[100%]">
-                {   
-                    exploreList?.map((newUser) => (
-                        <div key={newUser.username} className='w-[40%] shadow-xl p-1 my-5 bg-white-'>
-                            <form className='flex justify-between items-center w-[100%]'>
-                                <Link href={`/users/${newUser.username}`} className='flex items-center'>
-                                    <div>
-                                        <Image src={`/pfps/${newUser.filename}`} alt={`${newUser.username}'s pfp`} width={50} height={50} className='rounded-full'/>
+        <div className="h-screen flex w-[100%]">
+            <Sidebar username={username}/>
+            <div className='flex-col items-center w-[60%] bg-green-100'>
+                <h2 className="flex items-center justify-center py-10 text-6xl font-bold"> 
+                    Explore 
+                </h2>
+                <div className="flex flex-col justify-start py-10 items-center w-[100%]">
+                    {   
+                        exploreList?.map((newUser) => (
+                            <div key={newUser.username} className='w-[40%] shadow-xl p-1 my-5 bg-white-'>
+                                <form className='flex justify-between items-center w-[100%]'>
+                                    <Link href={`/users/${newUser.username}`} className='flex items-center'>
+                                        <div>
+                                            <Image src={`/pfps/${newUser.filename}`} alt={`${newUser.username}'s pfp`} width={50} height={50} className='rounded-full'/>
+                                        </div>
+                                        <div className='text-3xl font-bold px-4'>
+                                            <p>{newUser.username}</p>
+                                        </div>
+                                    </Link>
+                                    <div className='px-4'>
+                                        <input type='hidden' value={newUser.username} name='username'></input>
+                                        <button disabled={loading} formAction={clientHandleFollow}>Follow</button>
                                     </div>
-                                    <div className='text-3xl font-bold px-4'>
-                                        <p>{newUser.username}</p>
-                                    </div>
-                                </Link>
-                                <div className='px-4'>
-                                    <input type='hidden' value={newUser.username} name='username'></input>
-                                    <button disabled={loading} formAction={clientHandleFollow}>Follow</button>
-                                </div>
-                            </form>
-                        </div>
-                    ))
-                }
+                                </form>
+                            </div>
+                        ))
+                    }
+                </div>
+            </div>
+            <div className='w-[20%] bg-green-200'>
+                
             </div>
         </div>
     </>

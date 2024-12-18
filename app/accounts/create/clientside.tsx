@@ -1,103 +1,295 @@
-"use client"
+"use client";
 
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
+import { validateEmailUser } from "./serverside";
+import { motion } from "framer-motion";
 
 interface CreateAccountProps {
-    handleSubmit:(formData: FormData) => Promise<void>;
+handleSubmit: (formData: FormData) => Promise<void>;
 }
 
 const CreateClientside: React.FC<CreateAccountProps> = ({ handleSubmit }) => {
-    const letterRef = useRef<HTMLDivElement>(null);
-    const capitalRef = useRef<HTMLDivElement>(null);
-    const numberRef = useRef<HTMLDivElement>(null);
-    const lengthRef = useRef<HTMLDivElement>(null);
-    const msgRef = useRef<HTMLDivElement>(null);
+// use for live-updated clientside password validation
+const letterRef = useRef<HTMLLIElement>(null);
+const capitalRef = useRef<HTMLLIElement>(null);
+const numberRef = useRef<HTMLLIElement>(null);
+const lengthRef = useRef<HTMLLIElement>(null);
+const matchRef = useRef<HTMLLIElement>(null);
+const msgRef = useRef<HTMLDivElement>(null);
+const confirmMsgRef = useRef<HTMLDivElement>(null);
 
-    const handlePasswordFocus = () => {
-        msgRef.current?.classList.add("block");
-        msgRef.current?.classList.remove("hidden");
-    }
+const [loading, setLoading] = useState(false);
 
-    const handlePasswordBlur = () => {
-        msgRef.current?.classList.remove("block");
-        msgRef.current?.classList.add("hidden");
+// clientside password validation
+const [password, setPassword] = useState("");
+const [confirmPassword, setConfirmPassword] = useState("");
+const [lowerCheck, setLowerCheck] = useState(false);
+const [upperCheck, setUpperCheck] = useState(false);
+const [numberCheck, setNumberCheck] = useState(false);
+const [lengthCheck, setLengthCheck] = useState(false);
+
+// clientside email and username validation
+const [email, setEmail] = useState("");
+const [username, setUsername] = useState("");
+const [emailTaken, setEmailTaken] = useState(false);
+const [usernameTaken, setUsernameTaken] = useState(false);
+
+
+const updateValidationState = (ref: React.RefObject<HTMLLIElement>, isValid: boolean) => {
+    if (ref.current) {
+        const iconSpan = ref.current.querySelector("span");
+        if (isValid) {
+        if (iconSpan) iconSpan.textContent = "✔️"; // Update to check mark
+        return true;
+        } else {
+        if (iconSpan) iconSpan.textContent = "❌"; // Update to cross
+        return false;
+        }
     }
+    return false;
+};
+
+// Handle password validation and state
+const handlePasswordFocus = () => {
+    msgRef.current?.classList.add("visible", "opacity-100", "translate-y-0");
+    msgRef.current?.classList.remove("invisible", "opacity-0", "-translate-y-5");
+};
+const handlePasswordBlur = () => {
+    msgRef.current?.classList.add("invisible", "opacity-0", "-translate-y-5");
+    msgRef.current?.classList.remove("visible", "opacity-100", "translate-y-0");
+};
+const handlePasswordValidation = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(event.target.value);
+
+    const lowerCaseLetters = /[a-z]/g;
+    const upperCaseLetters = /[A-Z]/g;
+    const numbers = /[0-9]/g;
+
+    // Validate lowercase letter, uppercase letter, number, and length
+    setLowerCheck(updateValidationState(letterRef, event.target.value.match(lowerCaseLetters) !== null));
+    setUpperCheck(updateValidationState(capitalRef, event.target.value.match(upperCaseLetters) !== null));
+    setNumberCheck(updateValidationState(numberRef, event.target.value.match(numbers) !== null));
+    setLengthCheck(updateValidationState(lengthRef, event.target.value.length >= 8));
+};
+
+
+// Handle the confirm password input
+const handleConfirmPasswordValidaton = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setConfirmPassword(event.target.value);
+    updateValidationState(matchRef, event.target.value === password);
+};
+const handleConfirmPasswordFocus = () => {
+    confirmMsgRef.current?.classList.add("visible", "opacity-100", "translate-y-0");
+    confirmMsgRef.current?.classList.remove("invisible", "opacity-0", "-translate-y-5");
+};
+const handleConfirmPasswordBlur = () => {
+    confirmMsgRef.current?.classList.add("invisible", "opacity-0", "-translate-y-5");
+    confirmMsgRef.current?.classList.remove("visible", "opacity-100", "translate-y-0");
+};
+
+
+const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setLoading(true);
+    const formData = new FormData(event.currentTarget);
     
-    const handlePasswordValidation = (event:React.ChangeEvent<HTMLInputElement>) => {
-        // Validate lowercase letters
-        var lowerCaseLetters = /[a-z]/g;
-        if(event.target.value.match(lowerCaseLetters)) {
-            letterRef.current?.classList.remove("invalid"); // Note: the ? after 'current' says only execute if object not null
-            letterRef.current?.classList.add("valid");
-        } else {
-            letterRef.current?.classList.remove("valid");
-            letterRef.current?.classList.add("invalid");
-        }
+    // ensure username and email are valid before submitting to server
+    const valid: { email: boolean, username: boolean } = await validateEmailUser(email, username);
+    if(!(valid.email && valid.username)){
+        if(!valid.username) setUsernameTaken(true);
+        if(!valid.email) setEmailTaken(true);
 
-        // Validate capital letters
-        var upperCaseLetters = /[A-Z]/g;
-        if(event.target.value.match(upperCaseLetters)) {
-            capitalRef.current?.classList.remove("invalid");
-            capitalRef.current?.classList.add("valid");
-        } else {
-            capitalRef.current?.classList.remove("valid");
-            capitalRef.current?.classList.add("invalid");
-        }
-
-        // Validate numbers
-        var numbers = /[0-9]/g;
-        if(event.target.value.match(numbers)) {
-            numberRef.current?.classList.remove("invalid");
-            numberRef.current?.classList.add("valid");
-        } else {
-            numberRef.current?.classList.remove("valid");
-            numberRef.current?.classList.add("invalid");
-        }
-
-        // Validate length
-        if(event.target.value.length >= 8) {
-            lengthRef.current?.classList.remove("invalid");
-            lengthRef.current?.classList.add("valid");
-        } else {
-            lengthRef.current?.classList.remove("valid");
-            lengthRef.current?.classList.add("invalid");
-        }
+        setLoading(false);
+        return;
     }
+    await handleSubmit(formData);
+    setLoading(false);
+};
 
-    const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault(); // prevent page reload on form submit
-        const formData = new FormData(event.currentTarget);
-        await handleSubmit(formData);
-    }
-
-    return (
-        <>
+return (
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="bg-white shadow-md rounded p-8 w-[90%] max-w-lg">
+        <h1 className="text-2xl font-bold text-center mb-6">Create Account</h1>
+        <p className="text-center text-sm text-gray-600 mb-4">
+        Already have an account?{" "}
+        <a href="/accounts/login/" className="text-blue-500 hover:underline">
+            Sign in
+        </a>
+        </p>
+        <form onSubmit={handleFormSubmit} className="space-y-4 text-gray-600 relative">
         <div>
-            <p>
-                Already Have an account? <a href="/accounts/login/">Sign in</a>
-            </p>
-            <div>
-                <div>Create Account</div>
-                <form className="text-gray-600">
-                    <p>Full Name</p><input type="text" name="name" placeholder="Full Name"  required/>
-                    <p>Username</p><input type="text" name="username" placeholder="Username" required/>
-                    <p>Profile Picture</p><input type="file" name="pfp" required/>
-                    <p>Email</p><input type="email" name="email" placeholder="Email" required/>
-                    <p>Password</p><input type="password" name="password" placeholder="Password" onFocus={handlePasswordFocus} onBlur={handlePasswordBlur} onChange={handlePasswordValidation} pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters" required/>
-                    <p>Confirm Password</p><input type="password" name="confirmPassword" placeholder="Confirm Password" required/>
-                    <button formAction={handleSubmit}>Create Account</button>
-                </form>
-                <div id="message" ref={msgRef} className="hidden">
-                <h3>Password must contain the following:</h3>
-                    <div id="letter" className="invalid" ref={letterRef}>A <b>lowercase</b> letter</div>
-                    <div id="capital" className="invalid" ref={capitalRef}>A <b>capital (uppercase)</b> letter</div>
-                    <div id="number" className="invalid" ref={numberRef}>A <b>number</b></div>
-                    <div id="length" className="invalid" ref={lengthRef}>Minimum <b>8 characters</b></div>
-                </div>
+            <label htmlFor="name" className="block text-sm font-medium">
+                Full Name
+            </label>
+            <input
+            type="text"
+            name="name"
+            placeholder="Full Name"
+            className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+            required
+            />
+        </div>
+        <div>
+            <label htmlFor="username" className="block text-sm font-medium">
+                Username
+            </label>
+            <input
+            type="text"
+            name="username"
+            id="username"
+            placeholder="Username"
+            className={`w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 ${usernameTaken ? "border-red-500" : ""}`}
+            value={username}
+            onChange={(e) => setUsername(e.target.value.trim())}
+            onFocus={() => setUsernameTaken(false)}
+            required
+            />
+            {usernameTaken && 
+                <motion.p
+                    className="text-red-500 text-sm mt-1"
+                    initial={{ opacity: 0, y: -5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -5 }}
+                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                >
+                    That username is taken, please choose another username
+                </motion.p>
+            }
+        </div>
+        <div>
+            <label htmlFor="pfp" className="block text-sm font-medium">
+                Profile Picture
+            </label>
+            <input
+            type="file"
+            name="pfp"
+            className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+            required
+            />
+        </div>
+        <div>
+            <label htmlFor="email" className="block text-sm font-medium">
+                Email
+            </label>
+            <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="Email"
+                className={`w-full p-2 border rounded focus:ring-2 focus:ring-blue-500$ ${emailTaken ? "border-red-500" : ""}`}
+                value={email}
+                onChange={(e) => setEmail(e.target.value.trim())}
+                onFocus={() => setEmailTaken(false)}
+                required
+            />
+            {emailTaken && (
+                <motion.p
+                    className="text-red-500 text-sm mt-1"
+                    initial={{ opacity: 0, y: -5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -5 }}
+                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                >
+                    Email is already in use. Please use another one or&nbsp;
+                    <a href="/accounts/login/" className="text-blue-500 hover:underline">
+                        sign in
+                    </a>
+                </motion.p>
+            )}
+        </div>
+        <div className="relative">
+            <label htmlFor="password" className="block text-sm font-medium">
+            Password
+            </label>
+            <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            onFocus={handlePasswordFocus}
+            onBlur={handlePasswordBlur}
+            onChange={handlePasswordValidation}
+            pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+            title="Must contain at least one number, one uppercase, one lowercase letter, and at least 8 characters."
+            className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+            required
+            />
+            <div ref={msgRef} className="absolute -top-[160px] left-0 w-full bg-gray-100 p-3 rounded shadow-lg border border-gray-300 invisible opacity-0 transition-all duration-300 -translate-y-5">
+                <h3 className="text-sm font-medium mb-2">Password must contain:</h3>
+                <ul className="space-y-1 text-sm">
+                    <li ref={letterRef} className="flex items-center">
+                        <span className="mr-2">❌</span> A lowercase letter
+                    </li>
+                    <li ref={capitalRef} className="flex items-center">
+                        <span className="mr-2">❌</span>A capital (uppercase) letter
+                    </li>
+                    <li ref={numberRef} className="flex items-center">
+                        <span className="mr-2">❌</span>A number
+                    </li>
+                    <li ref={lengthRef} className="flex items-center">
+                        <span className="mr-2">❌</span>Minimum  8 characters
+                    </li>
+                </ul>
             </div>
         </div>
-        </>
-    )
-}
+        <div className="relative">
+            <label
+            htmlFor="confirmPassword"
+            className="block text-sm font-medium"
+            >
+            Confirm Password
+            </label>
+            <input
+            type="password"
+            name="confirmPassword"
+            placeholder="Confirm Password"
+            onFocus={handleConfirmPasswordFocus}
+            onBlur={handleConfirmPasswordBlur}
+            onChange={handleConfirmPasswordValidaton}
+            className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+            required
+            />
+            <div ref={confirmMsgRef} className="absolute -top-[60px] left-0 w-full bg-gray-100 p-3 rounded shadow-lg border border-gray-300 invisible opacity-0 transition-all duration-300 -translate-y-5">
+                <ul className="space-y-1 text-sm">
+                    <li ref={matchRef} className="flex items-center">
+                        <span className="mr-2">❌</span> Passwords must match
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <button
+            type="submit"
+            className={`w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition disabled:bg-blue-300 disabled:cursor-not-allowed`}
+            disabled={!(lowerCheck && upperCheck && numberCheck && lengthCheck && (password === confirmPassword) && !loading && !emailTaken && !usernameTaken)}
+        >
+            {loading ? (
+                <div className="flex justify-center items-center space-x-2">
+                    <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                        />
+                        <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                        />
+                    </svg>
+                    <span>
+                        Loading...
+                    </span>
+                </div>
+            ) : (
+                "Sign Up"
+            )}
+        </button>
+        </form>
+    </div>
+    </div>
+);
+};
 
 export default CreateClientside;

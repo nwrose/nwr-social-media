@@ -17,11 +17,6 @@ export default async function Account() {
     redirect('/error');
   }
   const username = data?.username;
-
-
-  const handlePost = async (formData: FormData) => {
-    
-  }
   
   return (
   <>

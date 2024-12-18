@@ -1,6 +1,7 @@
 *This seems more convenient than a more robust backlog app if I'm doing solo development. 
 
-ITEM 0: URGENT --> Fix Login/Create to instalogin if already signed in !!!
+ITEM 0: URGENT --> FIX BEHAVIOR WITH LINKS AND PREFETCHING PAGES --> Pre-fetch is causing problems with outdated cache...
+			\_--> Most noticeable right now when following/unfollowing users and navigating between user pages and their following/unfollowing pages
 
 Item1: Fix username creation/update to ensure all usernames are unique --> necessary for follower/following relationships
 
@@ -40,3 +41,5 @@ Item 17: Add hashtag support
 	--> Hashtags in posts
 	--> hashtags in search function
 	--> Pull up a feed of posts with the a given hashtag
+
+Item 18: Standardize post size for feed --> (Possibly allow unaltered post size for the post page??)

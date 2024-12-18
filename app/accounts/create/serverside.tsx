@@ -7,7 +7,7 @@ import { writeFile } from "fs/promises";
 import path from "path";
 
 
-export default async function CreateServerside(formData: FormData) {
+export async function CreateServerside(formData: FormData) {
   const supabase = await createClient();
 
   const name = formData.get("name") as string;
@@ -35,6 +35,7 @@ export default async function CreateServerside(formData: FormData) {
     const { error } = await supabase.auth.signUp({ email: email, password: password, });
 
     if(error){
+      console.log("error with signup: ", error);
       redirect('/error');
     }
   }
@@ -74,3 +75,31 @@ export default async function CreateServerside(formData: FormData) {
   revalidatePath('/', 'layout');
   redirect('/accounts/edit');
 };
+
+
+export async function validateEmailUser(email: string, username:string){
+  "use server"
+
+  console.log("in_email:", email, "--in_username:", username,email,username);
+
+  const supabase = await createClient();
+  const {data, error} = await supabase.rpc("validate_email_username", {in_email: email.trim(), in_username: username.trim()});
+  if(error){
+    console.log("error validating email or username:", error);
+    redirect('/error');
+  }
+
+  console.log("data", data);
+
+  const validationResult: {
+    email_available: boolean;
+    username_available: boolean;
+  } = data[0];
+
+  console.log("validation_result: ", validationResult);
+
+  return {
+    email: validationResult.email_available, 
+    username: validationResult.username_available
+  };
+} 

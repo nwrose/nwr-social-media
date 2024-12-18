@@ -117,8 +117,14 @@ export default async function UserPage({ params }: { params: { username: string 
         <div className="flex flex-col justify-start items-start w-[80%]">
             <div className="w-[100%] flex items-center justify-between"> 
                 <div className='flex flex-col items-center w-[40%]'>
-                    <div className="h-50px">
-                        <Image src={`/pfps/${user_data.filename}`} alt={`${params.username}'s pfp`} width={200} height={200} className='rounded-full'/>
+                    <div style={{ width: 256, height: 256, position: 'relative', overflow: 'hidden' }} className="rounded-full border-4 border-blue-400 m-2">
+                        <Image 
+                            src={`/pfps/${user_data.filename}`} 
+                            alt={`${params.username}'s pfp`} 
+                            fill
+                            style={{ objectFit: 'cover' }}
+                            sizes="256px"
+                        />
                     </div>
                     <div className='text-3xl font-bold px-4'>
                         <p>{params.username}</p>
@@ -168,13 +174,17 @@ export default async function UserPage({ params }: { params: { username: string 
                     </div>
                     }  
 
-                    <div className="w-[80%] flex flex-wrap">
+                    <div className="w-[80%] flex flex-wrap m-16">
                         {
                         postList?.map((post: {filename: string; postid: Number}) => (
-                            <div key={post.postid.toString()}>
+                            <div key={post.postid.toString()} className="p-2 shadow-lg m-2">
                                 <Link href={`/posts/${post.postid}`}>
-                                    <div className="shadow-lg h-[225px] w-[210px] flex items-center justify-center m-2">
-                                        <Image src={`/posts/${post.filename}`} alt="failed to load post" width={200} height={200} className=''/>
+                                    <div style={{ width: 128, height: 128, position: 'relative', overflow: 'hidden' }} className="flex items-center justify-center">
+                                        <Image 
+                                            src={`/posts/${post.filename}`} 
+                                            alt="failed to load post" 
+                                            fill 
+                                        />
                                     </div>
                                 </Link>
                             </div>

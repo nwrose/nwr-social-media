@@ -1,21 +1,60 @@
-'use client'
+'use client';
 
-import { useCallback, useEffect, useState } from 'react'
-import { createClient } from '@/utils/supabase/client'
-import { type User } from '@supabase/supabase-js'
+import { useCallback, useEffect, useState } from 'react';
+import { createClient } from '@/utils/supabase/client';
+import { type User } from '@supabase/supabase-js';
+import { handleSignout } from '@/app/actions';
 import Image from 'next/image';
 
-// ...
+// Reusable Modal Component
+function Modal({
+  message,
+  onCancel,
+  onConfirm,
+  loading,
+}: {
+  message: string | React.ReactNode;
+  onCancel: () => void;
+  onConfirm: () => void;
+  loading: boolean;
+}) {
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+      <div className="bg-white p-6 rounded shadow-lg w-[90%] max-w-md">
+        <div className="mb-6 text-center">{message}</div>
+        <div className="flex justify-between">
+          <button
+            onClick={onCancel}
+            className="bg-gray-200 px-4 py-2 rounded shadow hover:bg-gray-300"
+          >
+            Cancel
+          </button>
+          <button
+            disabled={loading}
+            onClick={onConfirm}
+            className={`px-4 py-2 rounded shadow text-white ${
+              loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-red-500 hover:bg-red-600'
+            }`}
+          >
+            {loading ? 'Processing...' : 'Confirm'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function AccountForm({ user }: { user: User | null }) {
-  const [loading, setLoading] = useState(true);
-  const [fullname, setFullname] = useState<string | null>(null);
-  const [displayFullname, setDisplayFullname] = useState<string | null>(null);
-  const [username, setUsername] = useState<string | null>(null);
-  const [displayUsername, setDisplayUsername] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [showSignOutModal, setShowSignOutModal] = useState(false);
+  const [fullname, setFullname] = useState<string | null>('');
+  const [username, setUsername] = useState<string | null>('');
+  const [bio, setBio] = useState<string | null>('');
   const [filename, setFilename] = useState<string | null>(null);
   const [email, setEmail] = useState<string | null>(null);
-  const [bio, setBio] = useState<string | null>(null);
+  const [displayFullname, setDisplayFullname] = useState<string | null>(null);
+  const [displayUsername, setDisplayUsername] = useState<string | null>(null);
   const [displayBio, setDisplayBio] = useState<string | null>(null);
 
   const supabase = createClient();
@@ -23,17 +62,13 @@ export default function AccountForm({ user }: { user: User | null }) {
   const getProfile = useCallback(async () => {
     try {
       setLoading(true);
-
-      const { data, error, status } = await supabase
+      const { data, error } = await supabase
         .from('users')
         .select(`username, email, fullname, filename, bio`)
         .eq('uuid', user?.id)
         .single();
 
-      if (error && status !== 406) {
-        console.log(error);
-        throw error;
-      }
+      if (error) throw error;
 
       if (data) {
         setFilename(data.filename);
@@ -41,112 +76,156 @@ export default function AccountForm({ user }: { user: User | null }) {
         setDisplayFullname(data.fullname);
         setDisplayUsername(data.username);
         setDisplayBio(data.bio);
-        setFullname('');
-        setUsername('');
-        setBio('');
       }
     } catch (error) {
       alert('Error loading user data!');
     } finally {
       setLoading(false);
-    };
+    }
   }, [user, supabase]);
 
   useEffect(() => {
-    getProfile()
-  }, [user, getProfile]);
+    getProfile();
+  }, [getProfile]);
 
-  async function updateProfile(
-    { username, fullname, bio,}: {
-    username: string | null 
-    fullname: string | null
-    bio: string | null }) 
-    {
+  const updateProfile = async () => {
     try {
       setLoading(true);
+      const { error } = await supabase
+        .from('users')
+        .update({ fullname, username, bio })
+        .eq('uuid', user?.id);
 
-      const { error } = await supabase.from('users').update({ fullname: fullname, username: username, bio: bio }).eq('email', user?.email).select();
+      if (error) throw error;
 
-      if (error){
-        throw error;
-      }
       setDisplayFullname(fullname);
       setDisplayUsername(username);
       setDisplayBio(bio);
-      setFullname('');
-      setUsername('');
-      setBio('');
-      alert('Profile updated!'); // # TODO: Remove?
-    } 
-    catch (error) {
-      alert('Error updating the data!');
-      console.log(error);
-    } 
-    finally {
+      setShowProfileModal(false);
+    } catch (error) {
+      alert('Error updating the profile!');
+    } finally {
       setLoading(false);
     }
-  }
+  };
+
+  const signOut = async () => {
+    setShowSignOutModal(false);
+    // Perform the sign-out logic here.
+    handleSignout();
+  };
 
   return (
-    <div className='w-[80%] flex'>
-      <div className='w-[50%] flex flex-col items-center'>
-        <div>
-          <Image src={`/pfps/${filename}`} width={200} height={200} alt="Loading..." decoding='async' className='rounded-full'/>
+    <div className="w-[80%] mx-auto flex flex-wrap">
+      {/* User Information Display */}
+      <div className="w-full lg:w-[50%] flex flex-col items-center">
+        <div className="rounded-full border-4 border-blue-400 m-2 overflow-hidden w-64 h-64 relative">
+          <Image
+            src={`/pfps/${filename || 'default.png'}`}
+            fill
+            alt="Profile Picture"
+            className="object-cover rounded-full"
+          />
         </div>
-        <div className='text-2xl my-2'>
-          <h1>{displayUsername}</h1>
-        </div>
-        <div className='my-4 space-y-4 w-[75%] flex flex-col'>
+        <h1 className="text-2xl my-2">{displayUsername || 'Anonymous'}</h1>
+        <div className="my-4 space-y-4 w-[75%] flex flex-col">
           <div>
-            <h4> Name: </h4>
-            <p>{displayFullname}</p>
+            <h4 className="font-bold">Name:</h4>
+            <p>{displayFullname || 'N/A'}</p>
           </div>
           <div>
-            <h4> Email: </h4>
-            <p>{email}</p>
+            <h4 className="font-bold">Email:</h4>
+            <p>{email || 'N/A'}</p>
           </div>
           <div>
-            <h4>Bio:</h4>
-            <p>{displayBio}</p>
+            <h4 className="font-bold">Bio:</h4>
+            <p>{displayBio || 'N/A'}</p>
           </div>
         </div>
       </div>
 
-      <div className='text-gray-600 w-[50%] flex flex-col items-center space-y-4 bg-green-100 justify-around'>
-        <div className='space-y-2 w-[75%] flex flex-col pb-4'>
-          <h1 className='w-[100%] flex justify-center pb-4 text-2xl'>
-            Update Account Info
-          </h1>
-          <div className='flex flex-col items-center pb-4'>
-            <label htmlFor="fullName">Full Name</label>
-            <input id="fullName" type="text" value={fullname || ''} onChange={(e) => setFullname(e.target.value)}/>
+      {/* Update Form */}
+      <div className="w-full lg:w-[50%] bg-green-100 flex flex-col items-center space-y-4 p-6">
+        <h1 className="text-2xl font-bold">Update Account Info</h1>
+        <div className="w-[75%] space-y-4">
+          <div className="flex flex-col">
+            <label htmlFor="fullname" className="font-bold">
+              Full Name
+            </label>
+            <input
+              id="fullname"
+              type="text"
+              value={fullname || ''}
+              onChange={(e) => setFullname(e.target.value)}
+              className="p-2 rounded border"
+            />
           </div>
-
-          <div className='flex flex-col items-center pb-4'>
-            <label htmlFor="username">Username</label>
-            <input id="username" type="text" value={username || ''} onChange={(e) => setUsername(e.target.value)}/>
+          <div className="flex flex-col">
+            <label htmlFor="username" className="font-bold">
+              Username
+            </label>
+            <input
+              id="username"
+              type="text"
+              value={username || ''}
+              onChange={(e) => setUsername(e.target.value)}
+              className="p-2 rounded border"
+            />
           </div>
-
-          <div className='flex flex-col items-center'>
-            <label htmlFor="bio">Bio</label>
-            <textarea id="bio" value={bio || ''} onChange={(e) => setBio(e.target.value)} className="w-[100%] p-2 rounded-lg overflow-hidden resize-none"/>
+          <div className="flex flex-col">
+            <label htmlFor="bio" className="font-bold">
+              Bio
+            </label>
+            <textarea
+              id="bio"
+              value={bio || ''}
+              onChange={(e) => setBio(e.target.value)}
+              className="w-full p-2 rounded border resize-none"
+              rows={4}
+            />
           </div>
-
-          <div className='w-[100%] flex justify-center items-center text-2xl'>
-            <button onClick={() => updateProfile({ username, fullname, bio })} disabled={loading} className='rounded hover:bg-green-300 p-1'>
-              {loading ? 'Loading ...' : 'Update'}
-            </button>
-          </div>
+          <button
+            onClick={() => setShowProfileModal(true)}
+            disabled={loading}
+            className="w-full bg-green-300 p-2 rounded font-bold hover:bg-green-400 disabled:opacity-50"
+          >
+            Update
+          </button>
         </div>
-
-        <div>
-          <form action="/auth/signout" method="post">
-            <button type="submit" className='bg-red-300 border-2 border-black rounded p-1'>
-              Sign out
-            </button>
-          </form>
-        </div>
+        <button
+          onClick={() => setShowSignOutModal(true)}
+          className="bg-red-300 rounded p-2 font-bold hover:bg-red-400"
+        >
+          Sign Out
+        </button>
       </div>
+
+      {/* Profile Update Modal */}
+      {showProfileModal && (
+        <Modal
+          message={
+            <div className="space-y-2">
+              <p className="font-bold text-lg">Confirm the following changes:</p>
+              <p><strong>Full Name:</strong> {fullname}</p>
+              <p><strong>Username:</strong> {username}</p>
+              <p><strong>Bio:</strong> {bio}</p>
+            </div>
+          }
+          onCancel={() => setShowProfileModal(false)}
+          onConfirm={updateProfile}
+          loading={loading}
+        />
+      )}
+
+      {/* Sign-Out Confirmation Modal */}
+      {showSignOutModal && (
+        <Modal
+          message="Are you sure you want to sign out?"
+          onCancel={() => setShowSignOutModal(false)}
+          onConfirm={signOut}
+          loading={false}
+        />
+      )}
     </div>
   );
 }

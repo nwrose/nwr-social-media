@@ -2,7 +2,8 @@
 
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
-import { userAgent } from "next/server";
+import { revalidatePath } from "next/cache";
+
 
 export async function handleLike(postid: number){
     "use server"
@@ -59,4 +60,70 @@ export async function handleCommentDelete(commentid: number){
     if(error){
         console.log("error removing comment from DB", error);
     }
+}
+
+
+// follow a user with inputted uuid
+export async function handleFollow(uuid: string){
+    "use server"
+
+    const supabase = await createClient();
+    
+    // send request to DB to insert username into following table
+    const uuid2 = uuid;
+    const {error, status} = await supabase.from('following').insert({uuid2});
+
+    if(error && status !== 406){
+        console.log("error folllowing user from usercard:", error);
+        redirect('/error');
+    }
+    return true;
+}
+
+
+// unfollow a user with an inputted uuid
+export async function handleUnfollow(uuid: string){
+    "use server"
+
+    const supabase = await createClient();
+
+    // get current uuid via auth
+    const user = await supabase.auth.getUser();
+    if(!user){
+        redirect('/login');
+    }
+
+    const {error, status} = await supabase.from("following").delete().eq("uuid1", user.data.user?.id).eq("uuid2", uuid);
+    if(error && status !== 406){
+        console.log("error unfollowing user", error);
+        redirect('/error');
+    }
+}
+
+
+export async function deletePost(postid:number){
+    "use server"
+
+    const supabase = await createClient();
+
+    const {error, status} = await supabase.from("posts").delete().eq("postid", postid);
+    if(error && status !== 406){
+        console.log("error deleting post", error);
+        redirect('/error');
+    }
+}
+
+export async function deletedRedirect(username:string){
+    "use server"
+
+    redirect(`/users/${username}`);
+}
+
+
+export async function handleSignout(){
+    "use server"
+
+    const supabase = await createClient();
+    supabase.auth.signOut();
+    redirect('/accounts/login');
 }

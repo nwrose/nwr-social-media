@@ -1,5 +1,5 @@
 import CreateClientside from "./clientside";
-import CreateServerside from "./serverside";
+import { CreateServerside } from "./serverside";
 
 const CreatePage:React.FC = async () => {
     const handleFormSubmit = async (formData: FormData) => {

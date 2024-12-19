@@ -2,230 +2,238 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { createClient } from '@/utils/supabase/client';
+import { Modal } from '@/app/components';
 import { type User } from '@supabase/supabase-js';
-import { handleSignout } from '@/app/actions';
+import { handleSignout, verifyUsername } from '@/app/actions';
+import { motion } from "framer-motion";
 import Image from 'next/image';
 
-// Reusable Modal Component
-function Modal({
-  message,
-  onCancel,
-  onConfirm,
-  loading,
-}: {
-  message: string | React.ReactNode;
-  onCancel: () => void;
-  onConfirm: () => void;
-  loading: boolean;
-}) {
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-      <div className="bg-white p-6 rounded shadow-lg w-[90%] max-w-md">
-        <div className="mb-6 text-center">{message}</div>
-        <div className="flex justify-between">
-          <button
-            onClick={onCancel}
-            className="bg-gray-200 px-4 py-2 rounded shadow hover:bg-gray-300"
-          >
-            Cancel
-          </button>
-          <button
-            disabled={loading}
-            onClick={onConfirm}
-            className={`px-4 py-2 rounded shadow text-white ${
-              loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-red-500 hover:bg-red-600'
-            }`}
-          >
-            {loading ? 'Processing...' : 'Confirm'}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
+
 
 export default function AccountForm({ user }: { user: User | null }) {
-  const [loading, setLoading] = useState(false);
-  const [showProfileModal, setShowProfileModal] = useState(false);
-  const [showSignOutModal, setShowSignOutModal] = useState(false);
-  const [fullname, setFullname] = useState<string | null>('');
-  const [username, setUsername] = useState<string | null>('');
-  const [bio, setBio] = useState<string | null>('');
-  const [filename, setFilename] = useState<string | null>(null);
-  const [email, setEmail] = useState<string | null>(null);
-  const [displayFullname, setDisplayFullname] = useState<string | null>(null);
-  const [displayUsername, setDisplayUsername] = useState<string | null>(null);
-  const [displayBio, setDisplayBio] = useState<string | null>(null);
+	// loading and modals
+	const [loading, setLoading] = useState(false);
+	const [showProfileModal, setShowProfileModal] = useState(false);
+	const [showSignOutModal, setShowSignOutModal] = useState(false);
 
-  const supabase = createClient();
+	// field inputs
+	const [fullname, setFullname] = useState<string | null>('');
+	const [username, setUsername] = useState<string | null>('');
+	const [bio, setBio] = useState<string | null>('');
+	const [verifyMsg, setVerifyMsg] = useState<"GOOD" | "SHORT" | "SPACE" | "TAKEN">("GOOD");
 
-  const getProfile = useCallback(async () => {
-    try {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('users')
-        .select(`username, email, fullname, filename, bio`)
-        .eq('uuid', user?.id)
-        .single();
+	// display values for account
+	const [filename, setFilename] = useState<string | null>(null);
+	const [email, setEmail] = useState<string | null>(null);
+	const [displayFullname, setDisplayFullname] = useState<string | null>(null);
+	const [displayUsername, setDisplayUsername] = useState<string | null>(null);
+	const [displayBio, setDisplayBio] = useState<string | null>(null);
 
-      if (error) throw error;
+	const supabase = createClient();
 
-      if (data) {
-        setFilename(data.filename);
-        setEmail(data.email);
-        setDisplayFullname(data.fullname);
-        setDisplayUsername(data.username);
-        setDisplayBio(data.bio);
-      }
-    } catch (error) {
-      alert('Error loading user data!');
-    } finally {
-      setLoading(false);
-    }
-  }, [user, supabase]);
+	const getProfile = useCallback(async () => {
+		try {
+		setLoading(true);
+		const { data, error } = await supabase
+			.from('users')
+			.select(`username, email, fullname, filename, bio`)
+			.eq('uuid', user?.id)
+			.single();
 
-  useEffect(() => {
-    getProfile();
-  }, [getProfile]);
+		if (error) throw error;
 
-  const updateProfile = async () => {
-    try {
-      setLoading(true);
-      const { error } = await supabase
-        .from('users')
-        .update({ fullname, username, bio })
-        .eq('uuid', user?.id);
+		if (data) {
+			setFilename(data.filename);
+			setEmail(data.email);
+			setDisplayFullname(data.fullname);
+			setDisplayUsername(data.username);
+			setDisplayBio(data.bio);
 
-      if (error) throw error;
+			setFullname(data.fullname);
+			setUsername(data.username);
+			setBio(data.bio);
+		}
+		} catch (error) {
+		alert('Error loading user data!');
+		} finally {
+		setLoading(false);
+		}
+	}, [user, supabase]);
 
-      setDisplayFullname(fullname);
-      setDisplayUsername(username);
-      setDisplayBio(bio);
-      setShowProfileModal(false);
-    } catch (error) {
-      alert('Error updating the profile!');
-    } finally {
-      setLoading(false);
-    }
-  };
+	useEffect(() => {
+		getProfile();
+	}, [getProfile]);
 
-  const signOut = async () => {
-    setShowSignOutModal(false);
-    // Perform the sign-out logic here.
-    handleSignout();
-  };
+	const updateProfile = async () => {
+		setLoading(true);
+		// Verify username
+		const result = await verifyUsername(username);
+		if(result === "SHORT" || result === "SPACE" || result === "TAKEN"){
+			setVerifyMsg(result);
+		}
+		else{	
+			// update the profile
+			const { error } = await supabase
+				.from('users')
+				.update({ fullname, username, bio })
+				.eq('uuid', user?.id);
+			if (error){
+				alert("error with edit-account-form submission.\n              CHECK LOGS                  ");
+				console.log('error with edit-account-form submission', error);
+			}
 
-  return (
-    <div className="w-[80%] mx-auto flex flex-wrap">
-      {/* User Information Display */}
-      <div className="w-full lg:w-[50%] flex flex-col items-center">
-        <div className="rounded-full border-4 border-blue-400 m-2 overflow-hidden w-64 h-64 relative">
-          <Image
-            src={`/pfps/${filename || 'default.png'}`}
-            fill
-            alt="Profile Picture"
-            className="object-cover rounded-full"
-          />
-        </div>
-        <h1 className="text-2xl my-2">{displayUsername || 'Anonymous'}</h1>
-        <div className="my-4 space-y-4 w-[75%] flex flex-col">
-          <div>
-            <h4 className="font-bold">Name:</h4>
-            <p>{displayFullname || 'N/A'}</p>
-          </div>
-          <div>
-            <h4 className="font-bold">Email:</h4>
-            <p>{email || 'N/A'}</p>
-          </div>
-          <div>
-            <h4 className="font-bold">Bio:</h4>
-            <p>{displayBio || 'N/A'}</p>
-          </div>
-        </div>
-      </div>
+			setDisplayFullname(fullname);
+			setDisplayUsername(username);
+			setDisplayBio(bio);
+		}
+		setShowProfileModal(false);
+		setLoading(false);
+	};
 
-      {/* Update Form */}
-      <div className="w-full lg:w-[50%] bg-green-100 flex flex-col items-center space-y-4 p-6">
-        <h1 className="text-2xl font-bold">Update Account Info</h1>
-        <div className="w-[75%] space-y-4">
-          <div className="flex flex-col">
-            <label htmlFor="fullname" className="font-bold">
-              Full Name
-            </label>
-            <input
-              id="fullname"
-              type="text"
-              value={fullname || ''}
-              onChange={(e) => setFullname(e.target.value)}
-              className="p-2 rounded border"
-            />
-          </div>
-          <div className="flex flex-col">
-            <label htmlFor="username" className="font-bold">
-              Username
-            </label>
-            <input
-              id="username"
-              type="text"
-              value={username || ''}
-              onChange={(e) => setUsername(e.target.value)}
-              className="p-2 rounded border"
-            />
-          </div>
-          <div className="flex flex-col">
-            <label htmlFor="bio" className="font-bold">
-              Bio
-            </label>
-            <textarea
-              id="bio"
-              value={bio || ''}
-              onChange={(e) => setBio(e.target.value)}
-              className="w-full p-2 rounded border resize-none"
-              rows={4}
-            />
-          </div>
-          <button
-            onClick={() => setShowProfileModal(true)}
-            disabled={loading}
-            className="w-full bg-green-300 p-2 rounded font-bold hover:bg-green-400 disabled:opacity-50"
-          >
-            Update
-          </button>
-        </div>
-        <button
-          onClick={() => setShowSignOutModal(true)}
-          className="bg-red-300 rounded p-2 font-bold hover:bg-red-400"
-        >
-          Sign Out
-        </button>
-      </div>
+	const signOut = async () => {
+		setShowSignOutModal(false);
+		handleSignout();
+	};
 
-      {/* Profile Update Modal */}
-      {showProfileModal && (
-        <Modal
-          message={
-            <div className="space-y-2">
-              <p className="font-bold text-lg">Confirm the following changes:</p>
-              <p><strong>Full Name:</strong> {fullname}</p>
-              <p><strong>Username:</strong> {username}</p>
-              <p><strong>Bio:</strong> {bio}</p>
-            </div>
-          }
-          onCancel={() => setShowProfileModal(false)}
-          onConfirm={updateProfile}
-          loading={loading}
-        />
-      )}
+	return (
+		<div className="max-w-5xl mx-auto bg-gray-50 w-full">
+			<div className="flex justify-around items-center w-full h-screen">
+				<div className="flex flex-col items-center justify-between bg-white shadow-lg w-[45%] h-5/6 min-h-[400px] rounded-lg p-6">
+					<div className='flex flex-col items-center justify-around space-y-4'>
+						<div className="relative w-40 h-40 rounded-full overflow-hidden border-4 border-blue-400 shadow-2xl">
+							<Image
+								src={`/pfps/${filename || 'default.png'}`}
+								fill
+								alt="Profile Picture"
+								className="object-cover"
+							/>
+						</div>
+						<h1 className="text-2xl font-semibold">{displayUsername || 'Anonymous'}</h1>
+						<div className="w-full text-center space-y-2">
+							<p className="text-sm"><strong>Name:</strong> {displayFullname || 'N/A'}</p>
+							<p className="text-sm"><strong>Email:</strong> {email || 'N/A'}</p>
+							<p className="text-sm"><strong>Bio:</strong> {displayBio || 'N/A'}</p>
+						</div>
+					</div>
+					<button
+						onClick={() => setShowSignOutModal(true)}
+						className="w-full py-2 bg-red-500 text-white rounded shadow-lg hover:bg-red-600 transition"
+					>
+						Sign Out
+					</button>
+				</div>
 
-      {/* Sign-Out Confirmation Modal */}
-      {showSignOutModal && (
-        <Modal
-          message="Are you sure you want to sign out?"
-          onCancel={() => setShowSignOutModal(false)}
-          onConfirm={signOut}
-          loading={false}
-        />
-      )}
-    </div>
-  );
+				<div className="flex flex-col justify-between p-6 bg-white rounded-lg shadow-lg space-y-6 w-[45%] h-5/6">
+					<div className='space-y-6'>
+						<h2 className="text-xl font-semibold text-gray-700"> Update Account Info </h2>
+						<div className="space-y-4">
+							<div>
+								<label htmlFor="fullname" className="block text-sm font-semibold text-gray-600">
+									Full Name
+								</label>
+								<input
+									id="fullname"
+									type="text"
+									value={fullname || ''}
+									onChange={(e) => setFullname(e.target.value)}
+									className="w-full p-2 mt-1 rounded border shadow-sm focus:ring-2 focus:ring-blue-400"
+								/>
+							</div>
+							<div>
+								<label htmlFor="username" className="block text-sm font-semibold text-gray-600">
+									Username
+								</label>
+								<input
+									id="username"
+									type="text"
+									value={username || ''}
+									onFocus={() => setVerifyMsg("GOOD")}
+									onChange={(e) => setUsername(e.target.value.trim())}
+									className={`w-full p-2 mt-1 rounded border shadow-sm focus:ring-2 focus:ring-blue-400 ${verifyMsg === "GOOD" ? "" : "border-red-500" }`}
+								/>
+								{(verifyMsg === "SHORT") &&
+								    <motion.p
+										className="text-red-500 text-sm mt-1"
+										initial={{ opacity: 0, y: -5 }}
+										animate={{ opacity: 1, y: 0 }}
+										exit={{ opacity: 0, y: -5 }}
+										transition={{ duration: 0.3, ease: "easeInOut" }}
+									>
+												Username must be at least 3 characters
+									</motion.p>
+								}
+								{(verifyMsg === "SPACE") &&
+									<motion.p
+										className="text-red-500 text-sm mt-1"
+										initial={{ opacity: 0, y: -5 }}
+										animate={{ opacity: 1, y: 0 }}
+										exit={{ opacity: 0, y: -5 }}
+										transition={{ duration: 0.3, ease: "easeInOut" }}
+									>
+										Username must not contain spaces
+									</motion.p>
+								}
+								{(verifyMsg === "TAKEN") &&
+								    <motion.p
+										className="text-red-500 text-sm mt-1"
+										initial={{ opacity: 0, y: -5 }}
+										animate={{ opacity: 1, y: 0 }}
+										exit={{ opacity: 0, y: -5 }}
+										transition={{ duration: 0.3, ease: "easeInOut" }}
+									>
+										Username is taken
+									</motion.p>
+								}
+							</div>
+							<div>
+								<label htmlFor="bio" className="block text-sm font-semibold text-gray-600">
+									Bio
+								</label>
+								<textarea
+									id="bio"
+									value={bio || ''}
+									onChange={(e) => setBio(e.target.value)}
+									className="w-full p-2 mt-1 rounded border shadow-sm focus:ring-2 focus:ring-blue-400"
+									rows={4}
+								/>
+							</div>
+						</div>
+					</div>
+					<button
+							onClick={() => setShowProfileModal(true)}
+							disabled={loading}
+							className="w-full py-2 bg-blue-500 text-white rounded shadow-lg hover:bg-blue-600 transition disabled:opacity-50 mb-10"
+						>
+							Update
+					</button>
+				</div>
+			</div>
+
+			{/* Modals */}
+			{showProfileModal && (
+				<Modal
+				message={
+					<div>
+					<p className="font-semibold text-lg">Confirm the following changes:</p>
+					<p><strong>Full Name:</strong> {fullname}</p>
+					<p><strong>Username:</strong> {username}</p>
+					<p><strong>Bio:</strong> {bio}</p>
+					</div>
+				}
+				onCancel={() => setShowProfileModal(false)}
+				onConfirm={updateProfile}
+				loading={loading}
+				/>
+			)}
+
+			{showSignOutModal && (
+				<Modal
+				message="Are you sure you want to sign out?"
+				onCancel={() => setShowSignOutModal(false)}
+				onConfirm={signOut}
+				loading={false}
+				/>
+			)}
+		</div>
+	);
 }

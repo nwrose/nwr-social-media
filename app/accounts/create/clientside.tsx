@@ -32,7 +32,7 @@ const [lengthCheck, setLengthCheck] = useState(false);
 const [email, setEmail] = useState("");
 const [username, setUsername] = useState("");
 const [emailTaken, setEmailTaken] = useState(false);
-const [usernameTaken, setUsernameTaken] = useState(false);
+const [usernameValid, setUsernameValid] = useState<"GOOD" | "SHORT" | "SPACE" | "TAKEN">("GOOD")
 
 
 const updateValidationState = (ref: React.RefObject<HTMLLIElement>, isValid: boolean) => {
@@ -42,7 +42,7 @@ const updateValidationState = (ref: React.RefObject<HTMLLIElement>, isValid: boo
         if (iconSpan) iconSpan.textContent = "✔️"; // Update to check mark
         return true;
         } else {
-        if (iconSpan) iconSpan.textContent = "❌"; // Update to cross
+        if (iconSpan) iconSpan.textContent = "❌"; // Update to red X
         return false;
         }
     }
@@ -94,10 +94,11 @@ const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     const formData = new FormData(event.currentTarget);
     
     // ensure username and email are valid before submitting to server
-    const valid: { email: boolean, username: boolean } = await validateEmailUser(email, username);
-    if(!(valid.email && valid.username)){
-        if(!valid.username) setUsernameTaken(true);
-        if(!valid.email) setEmailTaken(true);
+    const result: { email_available: boolean, username_status: "GOOD" | "SHORT" | "SPACE" | "TAKEN"} = await validateEmailUser(email, username);
+    
+    if(!(result.email_available && result.username_status === "GOOD")){
+        setUsernameValid(result.username_status);
+        if(!result.email_available) setEmailTaken(true);
 
         setLoading(false);
         return;
@@ -138,13 +139,13 @@ return (
             name="username"
             id="username"
             placeholder="Username"
-            className={`w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 ${usernameTaken ? "border-red-500" : ""}`}
+            className={`w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 ${(usernameValid === "GOOD") ? "" : "border-red-500"}`}
             value={username}
             onChange={(e) => setUsername(e.target.value.trim())}
-            onFocus={() => setUsernameTaken(false)}
+            onFocus={() => setUsernameValid("GOOD")}
             required
             />
-            {usernameTaken && 
+            {usernameValid === "SHORT" && 
                 <motion.p
                     className="text-red-500 text-sm mt-1"
                     initial={{ opacity: 0, y: -5 }}
@@ -152,7 +153,29 @@ return (
                     exit={{ opacity: 0, y: -5 }}
                     transition={{ duration: 0.3, ease: "easeInOut" }}
                 >
-                    That username is taken, please choose another username
+                    Username must contain at least 3 characters
+                </motion.p>
+            }
+            {usernameValid === "SPACE" && 
+                <motion.p
+                    className="text-red-500 text-sm mt-1"
+                    initial={{ opacity: 0, y: -5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -5 }}
+                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                >
+                    Username must not contain spaces
+                </motion.p>
+            }
+            {usernameValid === "TAKEN" && 
+                <motion.p
+                    className="text-red-500 text-sm mt-1"
+                    initial={{ opacity: 0, y: -5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -5 }}
+                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                >
+                    Username is taken. Please choose another username
                 </motion.p>
             }
         </div>
@@ -259,7 +282,7 @@ return (
         <button
             type="submit"
             className={`w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition disabled:bg-blue-300 disabled:cursor-not-allowed`}
-            disabled={!(lowerCheck && upperCheck && numberCheck && lengthCheck && (password === confirmPassword) && !loading && !emailTaken && !usernameTaken)}
+            disabled={!(lowerCheck && upperCheck && numberCheck && lengthCheck && (password === confirmPassword) && !loading && !emailTaken && usernameValid === "GOOD")}
         >
             {loading ? (
                 <div className="flex justify-center items-center space-x-2">

@@ -3,6 +3,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { datalist } from "framer-motion/client";
 
 
 export async function handleLike(postid: number){
@@ -126,4 +127,40 @@ export async function handleSignout(){
     const supabase = await createClient();
     supabase.auth.signOut();
     redirect('/accounts/login');
+}
+
+
+
+// Verify username choice
+export async function verifyUsername(username: string | null){
+    "use server"
+
+    // username must be >= 3 chars
+    if(!username || username.length < 3){
+        return "SHORT";
+    }
+
+    // username must not contain whitespace
+    if(username.match(/\s/) !== null){
+        return "SPACE";
+    }
+
+    const supabase = await createClient();
+
+    const user = await supabase.auth.getUser();
+    if(!user){
+        redirect('/accounts/login');
+    }
+    const {data, error} = await supabase.from('users').select('uuid').eq('username', username);
+    if(error){
+        console.log("error in actions.ts with verifyUsername", error);
+        redirect('/error');
+    }
+
+    // username cannot exist in database already (must be unique)
+    if(data.length > 0 && data[0].uuid !== user.data.user?.id){
+        return "TAKEN";
+    }
+  
+    return "GOOD";
 }

@@ -7,6 +7,34 @@ import Image from "next/image";
 import Link from "next/link";
 
 
+export function Modal({message, onCancel, onConfirm, loading,}
+	: { message: string | React.ReactNode; onCancel: () => void; onConfirm: () => void; loading: boolean;}) {
+	return (
+		<div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+		<div className="bg-white p-6 rounded-lg shadow-lg w-[90%] max-w-md">
+			<div className="mb-6 text-center">{message}</div>
+			<div className="flex justify-between">
+			<button
+				onClick={onCancel}
+				className="bg-gray-100 px-4 py-2 rounded-lg shadow hover:bg-gray-200 transition-colors"
+			>
+				Cancel
+			</button>
+			<button
+				disabled={loading}
+				onClick={onConfirm}
+				className={`px-4 py-2 rounded-lg shadow text-white ${
+				loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600 transition-colors'
+				}`}
+			>
+				{loading ? 'Processing...' : 'Confirm'}
+			</button>
+			</div>
+		</div>
+		</div>
+	);
+}
+
 
 export function Likes({
     in_LikeCount,
@@ -68,9 +96,9 @@ export function Comments({
     useEffect(() => {
         if (containerRef.current) {
             const allCommentsHeight = containerRef.current.scrollHeight;
-            const visibleCommentsHeight = Array.from(containerRef.current.children)
+            const visibleCommentsHeight = 4 + Array.from(containerRef.current.children)
                 .slice(0, maxVisibleComments)
-                .reduce((total, child) => total + (child as HTMLElement).offsetHeight, 0);
+                .reduce((total, child) => total + 4 + (child as HTMLElement).offsetHeight, 0);
 
             // Update the height dynamically based on interaction
             if (!hasInteracted) {
@@ -113,8 +141,8 @@ export function Comments({
             className={`overflow-hidden ${hasInteracted ? "transition-[max-height] duration-500 ease-in-out" : ""}`}
             style={{ maxHeight: containerHeight }}
         >
-            {commentList.map((comment, index) => (
-            <div key={comment.commentid} className="flex items-start space-x-3 px-3 py-1 bg-gray-50 rounded-lg shadow-sm">
+            {commentList.map((comment) => (
+            <div key={comment.commentid} className="flex items-start space-x-3 px-3 py-1 my-1 bg-gray-50 rounded-lg shadow-sm">
                 <div className="flex flex-col w-full">
                     <div className="flex justify-between w-full">
                         <Link href={`/users/${comment.username}`} className="font-bold text-blue-800 hover:underline">
@@ -151,12 +179,12 @@ export function Comments({
         {commentList.length > maxVisibleComments && (
             <button
             onClick={() => {
-                setHasInteracted(true); // Set interaction flag on toggle
+                setHasInteracted(true); 
                 setShowAllComments(!showAllComments);
             }}
             className="text-blue-600 hover:underline self-start mt-2"
             >
-            {showAllComments ? "Hide comments" : `View ${commentList.length - maxVisibleComments} more comment(s)`}
+            {showAllComments ? "Hide comments" : `View ${commentList.length - maxVisibleComments} more comment${commentList.length - maxVisibleComments === 1 ? "" : "s"}`}
             </button>
         )}
         
@@ -225,7 +253,7 @@ export function Sidebar({ username }: { username: string }) {
 
 export function PFP({filename}: {filename: string}){
     return(
-        <div style={{ width: 36, height: 36, position: 'relative', overflow: 'hidden' }} className="rounded-full border-2 border-blue-400 my-2">
+        <div style={{ width: 36, height: 36, position: 'relative', overflow: 'hidden' }} className="rounded-full border-2 border-blue-400 my-2 shadow-xl">
             <Image
                 src={`/pfps/${filename}`}
                 alt='pfp'

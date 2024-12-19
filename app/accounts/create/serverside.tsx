@@ -77,11 +77,10 @@ export async function CreateServerside(formData: FormData) {
 };
 
 
-export async function validateEmailUser(email: string, username:string){
+export async function validateEmailUser(email: string, username: string){
   "use server"
 
-  console.log("in_email:", email, "--in_username:", username,email,username);
-
+  let usernameResult : "GOOD" | "SHORT" | "SPACE" | "TAKEN";
   const supabase = await createClient();
   const {data, error} = await supabase.rpc("validate_email_username", {in_email: email.trim(), in_username: username.trim()});
   if(error){
@@ -89,17 +88,26 @@ export async function validateEmailUser(email: string, username:string){
     redirect('/error');
   }
 
-  console.log("data", data);
-
   const validationResult: {
     email_available: boolean;
     username_available: boolean;
   } = data[0];
 
-  console.log("validation_result: ", validationResult);
+  if(username.length < 3){
+    usernameResult = "SHORT";
+  }
+  else if(username.match(/\s/) !== null){
+    usernameResult = "SPACE";
+  }
+  else if(!validationResult.username_available){
+    usernameResult = "TAKEN";
+  }
+  else{
+    usernameResult = "GOOD";
+  }
 
-  return {
-    email: validationResult.email_available, 
-    username: validationResult.username_available
+  return{
+    email_available: validationResult.email_available,
+    username_status: usernameResult
   };
 } 

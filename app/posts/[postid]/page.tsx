@@ -1,9 +1,6 @@
 import { createClient } from "@/utils/supabase/server"
 import { redirect } from "next/navigation";
-import { Likes, Comments, Sidebar, PFP, DeletePost, Post} from "@/app/components";
-import { formatDistanceToNow } from 'date-fns';
-import Image from "next/image";
-import Link from "next/link";
+import { Sidebar, DeletePost, Post, CaptionChange, AspectChange } from "@/app/components";
 
 export default async function showPost({ params }: { params: { postid: string }}){
     const supabase = await createClient();
@@ -46,16 +43,22 @@ export default async function showPost({ params }: { params: { postid: string }}
 
 
     return(<>
-    <div className="flex w-[100%]">
+    <div className="flex w-[100%] min-h-screen">
         <Sidebar username={username}/>
-        <div className="w-[60%] flex flex-col items-center justify-center">
+        <div className="w-[60%] min-h-screen flex flex-col items-center justify-center">
             <Post my_username={username} postid={params.postid} likeCount={likeCount} isLiked={isLiked} post_data={post_data}/>
-            {(post_data.username === username) && 
-                <DeletePost postid={Number(params.postid)} username={post_data.username}/>
-            }
         </div>
-        <div className="w-[20%] bg-green-100">
-
+        <div className="w-[20%]"/>
+        <div className="w-[20%] bg-green-100 flex flex-col items-center fixed top-0 right-0 h-full shadow-lg bg-white px-4">
+            {(post_data.username === username) && 
+            <div className="w-full flex flex-col justify-between h-screen py-4">
+                <div className="w-full">
+                    <CaptionChange/>
+                    <AspectChange/>
+                </div>
+                <DeletePost postid={Number(params.postid)} username={post_data.username}/>
+            </div>
+            }
         </div>
     </div>
     </>)

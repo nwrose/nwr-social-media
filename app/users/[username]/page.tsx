@@ -64,22 +64,6 @@ export default async function UserPage({ params }: { params: { username: string 
         username = data?.username;
     }
 
-/*
-    const { data, error } = await supabase
-        .from("users")
-        .select("username, fullname, filename, created, bio, uuid")
-        .eq("username", params.username)
-        .single();
-    if(error){
-        console.log("error retreiving user data for user ", params.username);
-        return (
-            <div> 
-                <p> User Not found :O </p>
-                <Link href='/'> Return to Home Page </Link>
-            </div>
-        )
-    }
-*/
     // get user data
     let user_data: {
         fullname: string, 
@@ -111,90 +95,96 @@ export default async function UserPage({ params }: { params: { username: string 
 
     // display page for user with [username]
     return (
-    <>
-    <div className="flex w-[100%]">
-        <Sidebar username={username}/>
-        <div className="flex flex-col justify-start items-start w-[80%]">
-            <div className="w-[100%] flex items-center justify-between"> 
-                <div className='flex flex-col items-center w-[40%]'>
-                    <div style={{ width: 256, height: 256, position: 'relative', overflow: 'hidden' }} className="rounded-full border-4 border-blue-400 m-2">
+<>
+<div className="flex w-full min-h-screen bg-gray-50">
+    {/* Sidebar */}
+    <Sidebar username={username} />
+
+    {/* Main Content */}
+    <div className="flex flex-col flex-grow p-6 space-y-8 bg-gray-100">
+        <div className="p-6  bg-white shadow-md rounded-lg w-full flex flex-col items-center">
+            {/* User Info Section */}
+            <div className="flex flex-col md:flex-row items-center justify-around w-full md:w-5/6 ">
+                {/* Profile Picture and Username */}
+                <div className="flex flex-col items-center text-center space-y-4">
+                    <div className="relative w-40 h-40 rounded-full border-4 border-blue-400 overflow-hidden">
                         <Image 
                             src={`/pfps/${user_data.filename}`} 
-                            alt={`${params.username}'s pfp`} 
-                            fill
-                            style={{ objectFit: 'cover' }}
-                            sizes="256px"
+                            alt={`${params.username}'s profile picture`} 
+                            fill 
+                            style={{ objectFit: 'cover' }} 
+                            sizes="160px"
                         />
                     </div>
-                    <div className='text-3xl font-bold px-4'>
-                        <p>{params.username}</p>
-                    </div>
-                    { data.uuid === user.id && 
-                    <div className="">
-                        <Link href="/accounts/edit">Edit Account</Link>
-                    </div>
-                    }
+                    <h1 className="text-2xl font-bold">{params.username}</h1>
+                    {data.uuid === user.id && (
+                        <Link href="/accounts/edit" className="text-blue-500 hover:underline">
+                            Edit Account
+                        </Link>
+                    )}
                 </div>
 
-                <div className="flex flex-col w-[40%] space-y-4">
-                    <div>
-                        <p>{user_data.fullname}</p>
-                    </div>
-                    <div>
-                        <p>Joined {readableDate}</p>
-                    </div>
-                    <div>
-                        <p>{user_data.bio}</p>
-                    </div>
-                </div>
+                {/* Full Name and Bio */}
+                <div className="flex flex-col space-y-2 items-center justify-center h-full w-1/2">
+                    <p className="text-lg font-semibold">{user_data.fullname}</p>
+                    <p className="text-sm text-gray-500">Joined {readableDate}</p>
+                    <p className="text-gray-700 text-center">{user_data.bio}</p>
 
-                <div className="flex flex-col items-center w-[20%] text-xl space-y-4">
-                    <div>
-                        <Link href={`/users/${params.username}/followers`}> 
+                    {/* Followers and Following */}
+                    <div className="flex flex-col items-center justify-around h-2/3  space-y-4">
+                        <Link href={`/users/${params.username}/followers`} className="text-lg font-semibold text-blue-500 hover:bg-gray-100 p-2">
                             {user_data.follower_count} Followers
                         </Link>
-                   </div>
-                   <div>
-                        <Link href={`/users/${params.username}/following`}> 
+                        <Link href={`/users/${params.username}/following`} className="text-lg font-semibold text-blue-500 hover:bg-gray-100 p-2">
                             {user_data.following_count} Following
-                        </Link> 
-                   </div>
+                        </Link>
                 </div>
+                </div>
+                {params.username === username && (
+            /* New Post Section */
+            <div className="bg-gray-100 rounded-lg shadow-md flex flex-col justify-center items-center w-[50%] p-6 mt-10">
+                <h2 className="text-lg font-bold mb-4">Make New Post</h2>
+                <form action={handlePostAction} className="flex flex-row items-center space-y-0 space-x-4">
+                    <input type="file" name="img" required className="border rounded p-2" />
+                    <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
+                        Post
+                    </button>
+                </form>
             </div>
-            
-            <div className="w-[100%] flex justify-center">
-                <div className="w-[100%] flex flex-col justify-center">
-                    {params.username === username &&
-                    <div className="bg-gray-100 w-[100%] flex flex-col justify-center items-center">
-                        <h3>Make New Post</h3>
-                        <form action={handlePostAction}>
-                            <input type="file" name="img" required/>
-                            <button type="submit"> Post </button>
-                        </form>
-                    </div>
-                    }  
+            )}
+            </div>
 
-                    <div className="w-[80%] flex flex-wrap m-16">
-                        {
-                        postList?.map((post: {filename: string; postid: Number}) => (
-                            <div key={post.postid.toString()} className="p-2 shadow-lg m-2">
-                                <Link href={`/posts/${post.postid}`}>
-                                    <div style={{ width: 128, height: 128, position: 'relative', overflow: 'hidden' }} className="flex items-center justify-center">
-                                        <Image 
-                                            src={`/posts/${post.filename}`} 
-                                            alt="failed to load post" 
-                                            fill 
-                                        />
-                                    </div>
-                                </Link>
+        </div>
+
+
+        {/* User's Posts */}
+        <div className="flex flex-col items-center w-full p-6 bg-white rounded-lg shadow-md">
+            <h2 className="text-xl font-bold mb-6 text-center">Posts</h2>
+            <div className="flex flex-wrap justify-center w-[80%]">
+                {postList?.map((post: { filename: string; postid: Number }) => (
+                    <div
+                        key={post.postid.toString()}
+                        className="relative bg-white shadow-lg rounded-lg overflow-hidden hover:scale-105 transition-transform duration-300 p-2 m-2"
+                        style={{ width: '180px', height: '180px' }}
+                    >
+                        <Link href={`/posts/${post.postid}`}>
+                            {/* Image Container */}
+                            <div className="relative w-full h-full">
+                                <Image
+                                    src={`/posts/${post.filename}`}
+                                    alt="Post image"
+                                    fill
+                                    className="object-cover"
+                                />
                             </div>
-                        ))
-                        }
+                        </Link>
                     </div>
-                </div>
+                ))}
             </div>
         </div>
     </div>
-    </>
+</div>
+</>
+
     )
 }

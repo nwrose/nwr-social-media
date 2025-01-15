@@ -68,26 +68,26 @@ const Explore:React.FC<ExploreProps> = ({username, user}) => {
     <>
         <div className="h-screen flex w-[100%]">
             <Sidebar username={username}/>
-            <div className='flex-col items-center w-[60%] bg-green-100'>
-                <h2 className="flex items-center justify-center py-10 text-6xl font-bold"> 
-                    Explore 
+            <div className="flex flex-col items-center w-[60%] bg-gray-50 py-10 px-4 rounded-lg">
+                <h2 className="text-4xl md:text-5xl font-bold text-center text-gray-700 mb-6">
+                    Explore
                 </h2>
-                <div className="flex flex-col justify-start py-10 items-center w-[100%]">
-                    {   
-                        exploreList?.map((newUser) => (
-                                <Usercard 
-                                    username={newUser.username} 
-                                    filename={newUser.filename} 
-                                    currently_following={false} 
-                                    uuid={newUser.uuid}
-                                    key={newUser.username}
-                                    isSelf={username === newUser.username}
-                                />
-                        ))
-                    }
+                <div className="flex flex-col gap-6 w-full">
+                    {exploreList?.map((newUser) => (
+                    <Usercard
+                        username={newUser.username}
+                        filename={newUser.filename}
+                        currently_following={false}
+                        uuid={newUser.uuid}
+                        key={newUser.username}
+                        isSelf={username === newUser.username}
+                    />
+                    ))}
                 </div>
             </div>
-            <div className='w-[20%] bg-green-200'>
+
+
+            <div className='w-[20%] bg-white shadow-lg'>
                 
             </div>
         </div>

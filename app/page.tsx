@@ -40,7 +40,7 @@ export default async function Home(){
             <Sidebar username={username} />
             <div className="w-[60%] flex flex-col bg-white shadow-md">
                 <div className="p-4 bg-blue-600 text-white text-lg font-bold sticky top-0 z-10">
-                    Main Feed
+                    My Feed
                 </div>
                 <div className="flex flex-col items-center space-y-6 p-6">
                     {posts.map((post) => (
@@ -51,12 +51,12 @@ export default async function Home(){
                                 likeCount={post.likes?.length || 0}
                                 isLiked={post.likes?.findIndex((like) => like.username === username) >= 0}
                                 post_data={{
-                                post_filename: post.p_filename,
-                                created: post.p_created,
-                                username: post.p_username,
-                                pfp_filename: post.p_pfp_filename,
-                                comments: post.comments,
-                                likes: post.likes
+                                    post_filename: post.p_filename,
+                                    created: post.p_created,
+                                    username: post.p_username,
+                                    pfp_filename: post.p_pfp_filename,
+                                    comments: post.comments,
+                                    likes: post.likes
                                 }}
                             />
                         </div>

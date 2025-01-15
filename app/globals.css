@@ -54,3 +54,8 @@ body {
   left: -35px;
   content: "&#10006;";
 }
+
+
+.feedImage {
+  aspect-ratio: 5/4;
+}

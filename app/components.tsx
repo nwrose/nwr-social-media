@@ -7,30 +7,32 @@ import Image from "next/image";
 import Link from "next/link";
 
 
-export function Modal({message, onCancel, onConfirm, loading,}
+export function Modal({message, onCancel, onConfirm, loading}
 	: { message: string | React.ReactNode; onCancel: () => void; onConfirm: () => void; loading: boolean;}) {
 	return (
-		<div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-		<div className="bg-white p-6 rounded-lg shadow-lg w-[90%] max-w-md">
-			<div className="mb-6 text-center">{message}</div>
-			<div className="flex justify-between">
-			<button
-				onClick={onCancel}
-				className="bg-gray-100 px-4 py-2 rounded-lg shadow hover:bg-gray-200 transition-colors"
-			>
-				Cancel
-			</button>
-			<button
-				disabled={loading}
-				onClick={onConfirm}
-				className={`px-4 py-2 rounded-lg shadow text-white ${
-				loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600 transition-colors'
-				}`}
-			>
-				{loading ? 'Processing...' : 'Confirm'}
-			</button>
-			</div>
-		</div>
+		<div className={`fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50`}>
+            <div className="bg-white p-6 rounded-lg shadow-gray-500 w-[90%] max-w-md opacity-100">
+                <div className="mb-6 text-center">
+                    {message}
+                </div>
+                <div className="flex justify-between">
+                    <button
+                        onClick={onCancel}
+                        className="bg-gray-100 px-4 py-2 rounded-lg shadow hover:bg-gray-200 transition-colors"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        disabled={loading}
+                        onClick={onConfirm}
+                        className={`px-4 py-2 rounded-lg shadow text-white ${
+                        loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600 transition-colors'
+                        }`}
+                    >
+                        {loading ? 'Processing...' : 'Confirm'}
+                    </button>
+                </div>
+            </div>
 		</div>
 	);
 }
@@ -87,6 +89,7 @@ export function Comments({
     const [isLoadingDelete, setIsLoadingDelete] = useState(false);
     const [showAllComments, setShowAllComments] = useState(false);
     const [hasInteracted, setHasInteracted] = useState(false);
+    const [showModal, setShowModal] = useState(false);
 
     const maxVisibleComments = 3;
     const containerRef = useRef<HTMLDivElement>(null);
@@ -126,23 +129,24 @@ export function Comments({
     }
 
     // Delete comment
-    async function deleteComment(formData: FormData) {
+    async function deleteComment(commentid: number) {
         setIsLoadingDelete(true);
-        const commentIdToDelete = Number(formData.get("commentid"));
-        await handleCommentDelete(commentIdToDelete);
-        setCommentList((prev) => prev.filter((comment) => comment.commentid !== commentIdToDelete));
+        await handleCommentDelete(commentid);
+        setCommentList((prev) => prev.filter((comment) => comment.commentid !== commentid));
         setIsLoadingDelete(false);
     }
 
+    
+
     return (
-    <div className="flex flex-col w-full mt-6">
+    <div className="flex flex-col w-full mt-6 bg-white">
         <div
             ref={containerRef}
             className={`overflow-hidden ${hasInteracted ? "transition-[max-height] duration-500 ease-in-out" : ""}`}
             style={{ maxHeight: containerHeight }}
         >
             {commentList.map((comment) => (
-            <div key={comment.commentid} className="flex items-start space-x-3 px-3 py-1 my-1 bg-gray-50 rounded-lg shadow-sm">
+            <div key={comment.commentid} className="flex items-start space-x-3 px-3 py-1 my-1 bg-gray-100 bg-opacity-65 rounded-lg shadow-sm">
                 <div className="flex flex-col w-full">
                     <div className="flex justify-between w-full">
                         <Link href={`/users/${comment.username}`} className="font-bold text-blue-800 hover:underline">
@@ -151,18 +155,19 @@ export function Comments({
                         <div className="text-gray-500 text-sm flex items-end space-x-1">
                             <span>
                                 {(comment.username === my_username) && (
-                                    <form
-                                        onSubmit={(e) => {
-                                        e.preventDefault();
-                                        const formData = new FormData(e.currentTarget);
-                                        deleteComment(formData);
-                                        }}
-                                    >
-                                        <input type="hidden" name="commentid" value={comment.commentid} />
-                                            <button type="submit" disabled={isLoadingDelete} className="text-red-600 hover:text-red-800">
-                                                🗑️
-                                            </button>
-                                    </form>
+                                    <div>
+                                        <button disabled={isLoadingDelete} className="text-red-600 hover:bg-red-100 rounded" onClick={() => setShowModal(true)}>
+                                            🗑️
+                                        </button>
+                                        {showModal &&
+                                            <Modal 
+                                                message="Are you sure you would like to delete this comment?"
+                                                onCancel={() => setShowModal(false)}
+                                                onConfirm={() => deleteComment(comment.commentid)}
+                                                loading={isLoadingDelete}
+                                            />
+                                        }
+                                    </div>
                                 )}
                             </span>
                             <span>
@@ -226,10 +231,8 @@ export function Sidebar({ username }: { username: string }) {
     ];
 
   return (
-    <div className="w-[20%]">
-        <div className="w-[20%]">
-        </div>
-        <div className="w-[20%] bg-white shadow-lg h-screen fixed">
+    <div className="w-[20%] min-w-[200px] z-10">
+        <div className="w-[20%] bg-white shadow-lg h-screen fixed min-w-[200px]">
             <div className="flex flex-col h-full">
                 <div className="flex items-center justify-center h-[100px] text-white text-2xl font-bold">
                     <Link href="/" className="bg-blue-600 rounded-full p-6">
@@ -253,7 +256,7 @@ export function Sidebar({ username }: { username: string }) {
 
 export function PFP({filename}: {filename: string}){
     return(
-        <div style={{ width: 36, height: 36, position: 'relative', overflow: 'hidden' }} className="rounded-full border-2 border-blue-400 my-2 shadow-xl">
+        <div style={{ width: 36, height: 36, position: 'relative', overflow: 'hidden' }} className="rounded-full border-2 border-blue-400 my-2 shadow-xl hover:border-blue-500">
             <Image
                 src={`/pfps/${filename}`}
                 alt='pfp'
@@ -266,55 +269,66 @@ export function PFP({filename}: {filename: string}){
 }
 
 
-export function Usercard({username, filename, currently_following, uuid, isSelf}: { username: string; filename: string; currently_following: boolean; uuid: string; isSelf:boolean; }){
-    "use client"
-
+export function Usercard({
+    username,
+    filename,
+    currently_following,
+    uuid,
+    isSelf,
+  }: {
+    username: string;
+    filename: string;
+    currently_following: boolean;
+    uuid: string;
+    isSelf: boolean;
+  }) {
+    "use client";
+  
     const [loading, setLoading] = useState(false);
     const [isFollowing, setIsFollowing] = useState(currently_following);
-
+  
     const clientHandleFollow = async () => {
-        setLoading(true);
-        await handleFollow(uuid);
-        setIsFollowing(true);
-        setLoading(false);
-    }
-
+      setLoading(true);
+      await handleFollow(uuid);
+      setIsFollowing(true);
+      setLoading(false);
+    };
+  
     const clientHandleUnfollow = async () => {
-        setLoading(true);
-        await handleUnfollow(uuid);
-        setIsFollowing(false);
-        setLoading(false);
-    }
-
-    return(
-    <div key={username} className='w-[80%] shadow-xl p-1 m-5 bg-white rounded-md'>
-        <form className='flex justify-between items-center w-[100%]'>
-            <Link href={`/users/${username}`} className='flex items-center'>
-                <PFP filename={filename}/>
-                <div className='text-3xl font-bold px-4'>
-                    <p>{username}</p>
-                </div>
-            </Link>
-            <div className='px-4'>
-                <input type='hidden' value={username} name='username'></input>
-                {(!isSelf) && (
-                    (isFollowing) ? (
-                        <button disabled={loading} formAction={clientHandleUnfollow} className="border-2 rounded bg-gray-200 font-bold text-gray-700 p-1 disabled:cursor-not-allowed">
-                            Following
-                        </button>
-                    ) : (
-                        <button disabled={loading} formAction={clientHandleFollow} className="border-2 rounded bg-blue-400 font-bold text-white p-1 disabled:cursor-not-allowed">
-                            Follow
-                        </button>
-                    )
-                )          
-                }
-                
+      setLoading(true);
+      await handleUnfollow(uuid);
+      setIsFollowing(false);
+      setLoading(false);
+    };
+  
+    return (
+      <div className="w-full p-4 bg-white rounded-lg shadow hover:shadow-lg transition-shadow duration-300">
+        <div className="flex items-center justify-between">
+          <Link href={`/users/${username}`} className="flex items-center gap-4">
+            <PFP filename={filename} />
+            <div className="text-lg md:text-2xl font-bold text-gray-700">
+              {username}
             </div>
-        </form>        
-    </div>
-    )
-}
+          </Link>
+          {!isSelf && (
+            <button
+              disabled={loading}
+              onClick={isFollowing ? clientHandleUnfollow : clientHandleFollow}
+              className={`py-2 px-4 rounded font-bold text-sm text-base transition ${
+                isFollowing
+                  ? "bg-gray-200 text-gray-700 border border-gray-300 hover:bg-gray-300"
+                  : "bg-blue-500 text-white hover:bg-blue-600"
+              } disabled:opacity-50 disabled:cursor-not-allowed`}
+            >
+              {loading ? "Processing..." : isFollowing ? "Following" : "Follow"}
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  }
+  
+  
 
 
 
@@ -336,26 +350,29 @@ export function DeletePost({postid, username}: {postid: number, username:string}
 
     return(
     <div className="flex justify-center items-center w-[100%]">
-        <button disabled={loading} onClick={() => setShowModal(true)} className="bg-red-200 text-red-700 font-bold p-1">
+        <button disabled={loading} onClick={() => setShowModal(true)} className="w-full py-2 bg-red-500 text-white rounded shadow-lg hover:bg-red-600 transition">
             Delete Post
         </button>
         {(showModal) && 
             <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
                 <div className="bg-white p-4 rounded shadow-lg">
-                    <p className="mb-4 text-red-700">
-                        Are you sure you want to delete this post? This action cannot be undone.
+                    <p className="flex justify-center font-semibold">
+                        Are you sure you want to delete this post?
                     </p>
-                    <div className="flex justify-end space-x-2">
+                    <p className="mb-4 text-red-500 flex justify-center font-bold">
+                        This action cannot be undone.
+                    </p>
+                    <div className="flex justify-between space-x-2">
                         <button
                             onClick={() => setShowModal(false)}
-                            className="bg-gray-200 px-3 py-1 rounded"
+                            className="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded"
                         >
                             Cancel
                         </button>
                         <button
                             disabled={loading}
                             onClick={clientDeletePost}
-                            className="bg-red-500 text-white px-3 py-1 rounded"
+                            className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded "
                         >
                             {loading ? "Deleting..." : "Confirm"}
                         </button>
@@ -367,28 +384,24 @@ export function DeletePost({postid, username}: {postid: number, username:string}
     )
 }
 
-export function Post({
-    my_username,
-    postid,
-    likeCount,
-    isLiked,
-    post_data,
-}: {
+export function Post({my_username, postid, likeCount, isLiked, post_data}: {
     my_username: string;
     postid: string;
     likeCount: number;
     isLiked: boolean;
     post_data: {
-    post_filename: string;
-    created: string;
-    username: string;
-    pfp_filename: string;
-    comments: Array<{ commentid: number; text: string; created: string; username: string }>;
-    likes: Array<{ uuid: string; username: string }>;
+        post_filename: string;
+        created: string;
+        username: string;
+        pfp_filename: string;
+        comments: Array<{ commentid: number; text: string; created: string; username: string }>;
+        likes: Array<{ uuid: string; username: string }>;
     };
 }) {
+    "use client"
+
     return (
-    <div className="flex flex-col items-center w-full shadow-lg rounded-lg bg-white px-6 pb-6">
+    <div className="flex flex-col items-center w-full shadow-lg rounded-lg bg-white px-6 pb-6 ">
         <div className="w-full flex justify-between items-center border-b border-gray-300 ">
             <Link href={`/users/${post_data.username}`} className="flex items-center space-x-3 font-bold text-blue-800 hover:underline">
                 <div>
@@ -402,14 +415,15 @@ export function Post({
                 {formatDistanceToNow(new Date(post_data.created), { addSuffix: true })}
             </a>
         </div>
-        <div className="py-4">
-            <Image
-                src={`/posts/${post_data.post_filename}`}
-                alt="Post image"
-                width={800}
-                height={800}
-                className="rounded-lg w-full max-w-full"
-            />
+        <div className="w-full bg-white py-4 mx-auto">
+            <div className="relative w-full feedImage">
+                <Image
+                    src={`/posts/${post_data.post_filename}`}
+                    alt="Post image"
+                    fill
+                    className="object-cover rounded-lg"
+                />
+            </div>
         </div>
         <Likes in_LikeCount={likeCount} in_isLiked={isLiked} postid={Number(postid)} />
         <Comments in_commentList={post_data.comments || []} postid={Number(postid)} my_username={my_username} />
@@ -417,12 +431,29 @@ export function Post({
     );
 }
 
-// Render a post with proper sizing and formatting for a posts page
-function PagePostImage(){
 
+export function CaptionChange(){
+    "use client"
+
+    return (
+        <button 
+            className="w-full py-2 my-4 bg-blue-500 text-white rounded shadow-lg hover:bg-blue-600 transition"
+            onClick={() => alert("caption support coming soon!")}
+        >
+            Edit caption
+        </button>
+    )
 }
 
-// Render a post with proper sizing and formatting for a feed
-function FeedPostImage(){
+export function AspectChange(){
+    "use client"
 
+    return (
+        <button 
+            className="w-full py-2 my-4 bg-blue-500 text-white rounded shadow-lg hover:bg-blue-600 transition"
+            onClick={() => alert("Vertical and square aspect ratio support coming soon!")}
+        >
+            Change Aspect Ratio
+        </button>
+    )
 }

@@ -38,29 +38,32 @@ export default async function FollowersPage({ params }: { params: { username: st
     <>
     <div className="w-[100%] flex min-h-screen">
         <Sidebar username={username} />
-        <div className="flex flex-col items-center w-[60%]">
-            <h1 className="py-10 text-4xl font-bold"> 
+        <div className="flex flex-col items-center w-[60%] bg-gray-50 py-10 px-4 rounded-lg">
+            <h2 className="text-4xl md:text-5xl font-bold text-center text-gray-700 mb-6">
                 Followers
-            </h1>
-            <div className="flex flex-col justify-around items-center w-[100%]">
-                {
-                    followers?.map((follower: { filename: string; username: string; currently_following: boolean; uuid:string }) => (
-                        <Usercard 
-                            username={follower.username} 
-                            filename={follower.filename} 
-                            currently_following={follower.currently_following} 
-                            uuid={follower.uuid}
-                            key={follower.uuid}
-                            isSelf={username === follower.username}
-                        />
-                    ))
-                }
+            </h2>
+            <div className="flex flex-col gap-6 w-full">
+                {followers?.map((follower) => (
+                <Usercard
+                    username={follower.username}
+                    filename={follower.filename}
+                    currently_following={follower.currently_following}
+                    uuid={follower.uuid}
+                    key={follower.username}
+                    isSelf={username === follower.username}
+                />
+                ))}
             </div>
         </div>
-        <div className="w-[20%]">
+        <div className="flex items-start justify-center w-[20%] py-10 shadow-lg bg-white ">
             <Link href={`/users/${params.username}`}>
-                <button className="m-10 bg-red-200 hover:bg-red-100 rounded border-2 hover:ease-in-out hover:text-gray-400 p-1">
-                    Return to {params.username}'s profile
+                <button className="py-2 px-4 bg-blue-500 text-white font-bold text-sm md:text-base rounded-lg shadow hover:bg-blue-600 hover:shadow-md transition ease-in-out">
+                    <p>
+                        Return to 
+                    </p>
+                    <p>
+                        {params.username}'s profile
+                    </p>
                 </button>
             </Link>
         </div>

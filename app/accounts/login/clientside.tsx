@@ -100,13 +100,13 @@ export default function LoginPage() {
 								exit={{ opacity: 0, y: -5 }}
 								transition={{ duration: 0.3, ease: "easeInOut" }}
 							>
-								Sorry, we couldn't find an account with those credentials. Please double check your email and password.
+								Sorry, we couldn&#39;t find an account with those credentials. Please double check your email and password.
 							</motion.p>
 						)}
 					</div>
 				</form>
 				<div className="text-center mt-4">
-					<p className="text-sm text-gray-500">Don't have an account?</p>
+					<p className="text-sm text-gray-500">Don&#39;t have an account?</p>
 					<button onClick={handleSignup} className="text-blue-500 font-semibold hover:underline">
 						Sign Up
 					</button>

@@ -5,8 +5,6 @@ import { redirect } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
 import { type User } from '@supabase/supabase-js';
 import { Sidebar, Usercard } from '@/app/components'
-import Image from 'next/image';
-import Link from 'next/link';
 
 
 interface ExploreProps {
@@ -15,8 +13,6 @@ interface ExploreProps {
 }
 
 const Explore:React.FC<ExploreProps> = ({username, user}) => {
-    const [reload, setReload] = useState(0);
-    const [loading, setLoading] = useState(false);
     const [exploreList, setExploreList] = useState<{ username: string; filename: string; uuid: string }[]>([]);
 
     // ensure a proper user is using this component
@@ -30,8 +26,6 @@ const Explore:React.FC<ExploreProps> = ({username, user}) => {
     */
    const loadProfiles = useCallback(async () => {
     try{
-        setLoading(true);
-
         // use explore list func to get users I have not yet followed
         const {data, error, status} = await supabase.rpc("get_explore", { in_uuid: user.id });
         if(error && status !== 406){
@@ -54,7 +48,6 @@ const Explore:React.FC<ExploreProps> = ({username, user}) => {
         alert(error);
     }
     finally{
-        setLoading(false);
     }
    }, [user, supabase]);
 

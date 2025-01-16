@@ -2,7 +2,6 @@ import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { Sidebar, Usercard} from "@/app/components";
 import Link from "next/link";
-import Image from "next/image";
 
 export default async function FollowersPage({ params }: { params: { username: string }}){
     const supabase = await createClient();
@@ -17,6 +16,10 @@ export default async function FollowersPage({ params }: { params: { username: st
     let username:string;
     {
         const {data, error, status} = await supabase.from('users').select('username').eq('uuid', user.id).single();
+        if(error && status !== 406){
+            console.log("error fetching username", error);
+            redirect("/error");
+        }
         username = data?.username;
     }
 
@@ -62,7 +65,7 @@ export default async function FollowersPage({ params }: { params: { username: st
                         Return to 
                     </p>
                     <p>
-                        {params.username}'s profile
+                        {params.username}&#39;s profile
                     </p>
                 </button>
             </Link>

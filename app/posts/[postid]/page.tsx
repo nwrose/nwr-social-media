@@ -39,7 +39,7 @@ export default async function showPost({ params }: { params: { postid: string }}
 
     // get like variables
     const likeCount = post_data?.likes?.length || 0;
-    let isLiked: boolean = post_data?.likes?.findIndex((like) => like.username === username) >= 0;
+    const isLiked: boolean = post_data?.likes?.findIndex((like) => like.username === username) >= 0;
 
 
     return(<>

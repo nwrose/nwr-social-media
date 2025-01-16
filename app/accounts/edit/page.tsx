@@ -11,7 +11,7 @@ export default async function Account() {
     redirect('/accounts/login');
   }
 
-  const {data, error, status} = await supabase.from('users').select('username').eq('uuid', user.id).single();
+  const {data, error} = await supabase.from('users').select('username').eq('uuid', user.id).single();
   if(error){
     console.log("error fetching current username:", error);
     redirect('/error');

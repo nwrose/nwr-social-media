@@ -53,7 +53,12 @@ export function Likes({
     async function handleLikeToggle() {
         setIsLiked(!isLiked);
         setLikeCount(isLiked ? likeCount - 1 : likeCount + 1);
-        isLiked ? await handleUnlike(postid) : await handleLike(postid);
+        if(isLiked){
+            await handleUnlike(postid);
+        }
+        else{
+            await handleLike(postid);
+        }
     }
 
     return (
@@ -241,7 +246,7 @@ export function Sidebar({ username }: { username: string }) {
                 </div>
                 <nav className="flex flex-col">
                     {Links.map((link) => (
-                        <Link href={link.href} className="hover:bg-blue-200 text-lg text-gray-700 p-4 hover:text-black duration-500 ease-in-out">
+                        <Link key={link.text} href={link.href} className="hover:bg-blue-200 text-lg text-gray-700 p-4 hover:text-black duration-500 ease-in-out">
                             {link.text}
                         </Link>
                     ))

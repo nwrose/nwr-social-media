@@ -54,9 +54,9 @@ export default function AccountForm({ user }: { user: User | null }) {
 			setBio(data.bio);
 		}
 		} catch (error) {
-		alert('Error loading user data!');
+			alert(error);
 		} finally {
-		setLoading(false);
+			setLoading(false);
 		}
 	}, [user, supabase]);
 

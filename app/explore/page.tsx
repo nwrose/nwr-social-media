@@ -10,6 +10,10 @@ export default async function ExplorePage(){
     }
 
     const {data, error, status} = await supabase.from('users').select('username').eq('uuid', user.id).single();
+    if(error && status !== 406){
+        console.log("error in explore: ", error);
+        redirect('/error');
+    }
     const username:string = data?.username;
 
 

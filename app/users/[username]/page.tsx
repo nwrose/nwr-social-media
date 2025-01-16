@@ -26,7 +26,7 @@ const handlePostAction = async (formData: FormData) => {
         buffer
         );
     } catch (error) {
-        console.log("Error occurred while saving post image in public folder:\n");
+        console.log("Error occurred while saving post image in public folder:\n", error);
         redirect('/error');
     }
 
@@ -64,8 +64,13 @@ export default async function UserPage({ params }: { params: { username: string 
         username = data?.username;
     }
 
-    // get user data
-    let user_data: {
+    // get user data    
+    const {data, error, status} = await supabase.rpc("get_user_info", {in_username: params.username});
+    if(error && status !== 406){
+        console.log("error retrieving user posts for user ", params.username, ": \n", error);
+        redirect('/error');
+    }
+    const user_data: {
         fullname: string, 
         filename: string, 
         created: string, 
@@ -73,16 +78,10 @@ export default async function UserPage({ params }: { params: { username: string 
         follower_count: number, 
         following_count: number,   
         posts: Array<{ filename: string; username: string; created: string; postid: number;}>;
-    };
-    const {data, error, status} = await supabase.rpc("get_user_info", {in_username: params.username});
-    if(error && status !== 406){
-        console.log("error retrieving user posts for user ", params.username, ": \n", error);
-        redirect('/error');
-    }
-    user_data = data[0];
+    } = data[0];
     
     // Map posts data to the expected format
-    let postList: {filename: string, postid: number}[] =  user_data.posts?.map(
+    const postList: {filename: string, postid: number}[] =  user_data.posts?.map(
         (post: { filename: string; postid: number }) => ({
             filename: post.filename,
             postid: post.postid,    
@@ -161,7 +160,7 @@ export default async function UserPage({ params }: { params: { username: string 
         <div className="flex flex-col items-center w-full p-6 bg-white rounded-lg shadow-md">
             <h2 className="text-xl font-bold mb-6 text-center">Posts</h2>
             <div className="flex flex-wrap justify-center w-[80%]">
-                {postList?.map((post: { filename: string; postid: Number }) => (
+                {postList?.map((post: { filename: string; postid: number }) => (
                     <div
                         key={post.postid.toString()}
                         className="relative bg-white shadow-lg rounded-lg overflow-hidden hover:scale-105 transition-transform duration-300 p-2 m-2"

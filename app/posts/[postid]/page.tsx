@@ -43,16 +43,16 @@ export default async function showPost({ params }: { params: { postid: string }}
 
 
     return(<>
-    <div className="flex w-[100%] min-h-screen">
+    <div className="flex flex-col sm:flex-row w-[100%] min-h-screen">
         <Sidebar username={username}/>
-        <div className="w-[60%] min-h-screen flex flex-col items-center justify-center">
+        <div className="w-[100%] sm:w-[60%] min-h-screen flex flex-col items-center justify-center py-4 sm:py-2">
             <Post my_username={username} postid={params.postid} likeCount={likeCount} isLiked={isLiked} post_data={post_data}/>
         </div>
-        <div className="w-[20%]"/>
-        <div className="w-[20%] bg-green-100 flex flex-col items-center fixed top-0 right-0 h-full shadow-lg bg-white px-4">
+        <div className="w-[100%] sm:w-[20%]"/>
+        <div className="w-[100%] sm:w-[20%] flex flex-col items-center sm:fixed sm:top-0 sm:right-0 sm:h-full shadow-lg bg-white px-4">
             {(post_data.username === username) && 
-            <div className="w-full flex flex-col justify-between h-screen py-4">
-                <div className="w-full">
+            <div className="w-full flex flex-col justify-between sm:min-h-screen py-4">
+                <div className="w-full pb-4">
                     <CaptionChange/>
                     <AspectChange/>
                 </div>

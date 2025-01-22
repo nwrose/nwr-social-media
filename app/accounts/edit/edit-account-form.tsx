@@ -97,8 +97,8 @@ export default function AccountForm({ user }: { user: User | null }) {
 
 	return (
 		<div className="max-w-5xl mx-auto bg-gray-50 w-full">
-			<div className="flex flex-col sm:flex-row justify-around items-center w-full h-screen my-4">
-				<div className="flex flex-col items-center justify-between bg-white shadow-lg w-[80%] sm:w-[45%] h-5/6 min-h-[400px] rounded-lg p-6 my-4">
+			<div className="flex flex-col sm:flex-row justify-around items-center w-full h-screen">
+				<div className="flex flex-col items-center justify-between bg-white shadow-lg w-[80%] sm:w-[45%] sm:h-5/6 min-h-[400px] rounded-lg p-6 my-4">
 					<div className='flex flex-col items-center justify-around space-y-4'>
 						<div className="relative w-40 h-40 rounded-full overflow-hidden border-4 border-blue-400 shadow-2xl">
 							<CldImage
@@ -123,7 +123,7 @@ export default function AccountForm({ user }: { user: User | null }) {
 					</button>
 				</div>
 
-				<div className="flex flex-col justify-between p-6 bg-white rounded-lg shadow-lg space-y-6 w-[80%] sm:w-[45%] h-5/6">
+				<div className="flex flex-col justify-between p-6 my-4 bg-white rounded-lg shadow-lg space-y-6 w-[80%] sm:w-[45%] sm:h-5/6">
 					<div className='space-y-6'>
 						<h2 className="text-xl font-semibold text-gray-700"> Update Account Info </h2>
 						<div className="space-y-4">

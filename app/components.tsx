@@ -217,7 +217,7 @@ export function Comments({
                                     </div>
                                 )}
                             </span>
-                            <span>
+                            <span className="hidden sm:block">
                                 {formatDistanceToNow(new Date(comment.created), { addSuffix: true })}
                             </span>
                         </div>

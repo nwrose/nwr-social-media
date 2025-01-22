@@ -64,10 +64,10 @@ export default async function UserPage({ params }: { params: { username: string 
         <Sidebar username={username} />
 
         {/* Main Content */}
-        <div className="flex flex-col flex-grow p-6 space-y-8 bg-gray-100">
+        <div className="flex flex-col flex-grow p-6 space-y-8 bg-gray-100 w-[100%] sm:w-[60%]">
             <div className="p-6  bg-white shadow-md rounded-lg w-full flex flex-col items-center">
                 {/* User Info Section */}
-                <div className="flex flex-col md:flex-row items-center justify-around w-full md:w-5/6 ">
+                <div className="flex flex-col lg:flex-row items-center justify-around w-full lg:w-5/6 ">
                     {/* Profile Picture and Username */}
                     <div className="flex flex-col items-center text-center space-y-4">
                         <div className="relative w-40 h-40 rounded-full border-4 border-blue-400 overflow-hidden">
@@ -86,22 +86,21 @@ export default async function UserPage({ params }: { params: { username: string 
                             </Link>
                         )}
                     </div>
-
                     {/* Full Name and Bio */}
-                    <div className="flex flex-col space-y-2 items-center justify-center h-full w-1/2">
+                    <div className="flex flex-col space-y-2 items-center justify-center h-full lg:w-1/2 mb-6">
                         <p className="text-lg font-semibold">{user_data.fullname}</p>
                         <p className="text-sm text-gray-500">Joined {readableDate}</p>
                         <p className="text-gray-700 text-center">{user_data.bio}</p>
 
                         {/* Followers and Following */}
-                        <div className="flex flex-col items-center justify-around h-2/3  space-y-4">
+                        <div className="flex flex-col items-center justify-around h-2/3 space-y-4">
                             <Link href={`/users/${params.username}/followers`} className="text-lg font-semibold text-blue-500 hover:bg-gray-100 p-2">
                                 {user_data.follower_count} Followers
                             </Link>
                             <Link href={`/users/${params.username}/following`} className="text-lg font-semibold text-blue-500 hover:bg-gray-100 p-2">
                                 {user_data.following_count} Following
                             </Link>
-                    </div>
+                        </div>
                     </div>
                     {params.username === username && (
                         <CldUploadButtonClient uploadPreset="posts_and_pfps"/>

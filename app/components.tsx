@@ -1,10 +1,52 @@
 "use client"
 
 import React, { useRef, useEffect, useState } from "react";
-import {handleLike, handleUnlike, handleComment, handleCommentDelete, handleFollow, handleUnfollow, deletePost, deletedRedirect} from "./actions";
+import { handleLike, handleUnlike, handleComment, handleCommentDelete, handleFollow, handleUnfollow, deletePost, deletedRedirect, handlePostAction } from "./actions";
 import { formatDistanceToNow } from "date-fns";
-import Image from "next/image";
+import { CldImage as CldImageDefault, CldImageProps, CldUploadButton }  from 'next-cloudinary';
 import Link from "next/link";
+import Image from "next/image";
+
+
+// requires src=?   -->   should be same one I pass in for the upload button
+export function CldImage(props: CldImageProps) {
+    "use client"
+
+    return <CldImageDefault {...props} />
+}
+
+export function CldUploadButtonClient({ uploadPreset } : { uploadPreset: string}){
+    "use client"
+
+    // call server action to save uploaded img filename in database
+    const handleSuccess = (result: any) => {
+        const form = document.getElementById("post_upload_form") as HTMLFormElement;
+        const filenameField = form.querySelector("#filename") as HTMLInputElement;
+
+        if(filenameField){
+            filenameField.value = result.info.public_id;
+            form.requestSubmit(); // calls the server action
+        }
+        else{
+            alert("failed to locate filename field on image upload");
+        }
+    };
+
+    return( 
+    <>
+        <div>
+            <CldUploadButton uploadPreset={uploadPreset} onSuccess={handleSuccess}>
+                <div className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
+                    Upload New Post
+                </div>
+            </CldUploadButton>
+            <form id="post_upload_form" action={handlePostAction} method="POST">
+                <input type="hidden" name="filename" id="filename"/>
+            </form>
+        </div>
+    </>
+    )
+}
 
 
 export function Modal({message, onCancel, onConfirm, loading}
@@ -262,8 +304,8 @@ export function Sidebar({ username }: { username: string }) {
 export function PFP({filename}: {filename: string}){
     return(
         <div style={{ width: 36, height: 36, position: 'relative', overflow: 'hidden' }} className="rounded-full border-2 border-blue-400 my-2 shadow-xl hover:border-blue-500">
-            <Image
-                src={`/pfps/${filename}`}
+            <CldImage
+                src={filename}
                 alt='pfp'
                 fill
                 style={{ objectFit: 'cover' }}
@@ -422,8 +464,8 @@ export function Post({my_username, postid, likeCount, isLiked, post_data}: {
         </div>
         <div className="w-full bg-white py-4 mx-auto">
             <div className="relative w-full feedImage">
-                <Image
-                    src={`/posts/${post_data.post_filename}`}
+                <CldImage
+                    src={post_data.post_filename}
                     alt="Post image"
                     fill
                     className="object-cover rounded-lg"

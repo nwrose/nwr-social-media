@@ -3,6 +3,8 @@
 import React, { useRef, useState } from "react";
 import { validateEmailUser } from "./serverside";
 import { motion } from "framer-motion";
+import { CldImage, CldUploadButtonClient } from "@/app/components";
+import { CldUploadButton } from "next-cloudinary";
 
 interface CreateAccountProps {
 handleSubmit: (formData: FormData) => Promise<void>;
@@ -19,6 +21,7 @@ const msgRef = useRef<HTMLDivElement>(null);
 const confirmMsgRef = useRef<HTMLDivElement>(null);
 
 const [loading, setLoading] = useState(false);
+const [pfpUploaded, setPfpUploaded] = useState(false);
 
 // clientside password validation
 const [password, setPassword] = useState("");
@@ -107,6 +110,19 @@ const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     setLoading(false);
 };
 
+const handlePfpSuccess = (result: any) => {
+    const form = document.getElementById("create-form") as HTMLFormElement;
+    const filenameField = form.querySelector("#pfp-filename") as HTMLInputElement;
+
+    if(filenameField){
+        filenameField.value = result.info.public_id;
+        setPfpUploaded(true);
+    }
+    else{
+        alert("failed to locate filename field on image upload");
+    }
+}
+
 return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
     <div className="bg-white shadow-md rounded p-8 w-[90%] max-w-lg">
@@ -117,7 +133,7 @@ return (
             Sign in
         </a>
         </p>
-        <form onSubmit={handleFormSubmit} className="space-y-4 text-gray-600 relative">
+        <form onSubmit={handleFormSubmit} className="space-y-4 text-gray-600 relative" id="create-form">
         <div>
             <label htmlFor="name" className="block text-sm font-medium">
                 Full Name
@@ -180,15 +196,26 @@ return (
             }
         </div>
         <div>
-            <label htmlFor="pfp" className="block text-sm font-medium">
-                Profile Picture
+            <label htmlFor="pfp-filename" className="block text-sm font-medium">
+                Profile Picture {pfpUploaded && "✅"}
             </label>
             <input
-            type="file"
-            name="pfp"
-            className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+            type="hidden"
+            name="pfp-filename"
+            id="pfp-filename"
             required
             />
+            {!pfpUploaded ? (
+                <CldUploadButton uploadPreset="posts_and_pfps" onSuccess={handlePfpSuccess} className="w-full">
+                    <div className={`w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition`}>
+                        Upload Profile Picture
+                    </div>
+                </CldUploadButton>
+            ) : (
+                <div className={`w-full text-white py-2 rounded bg-blue-300 cursor-default text-center`}>
+                    Upload Profile Picture
+                </div>
+            )}
         </div>
         <div>
             <label htmlFor="email" className="block text-sm font-medium">

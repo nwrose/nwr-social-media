@@ -31,3 +31,13 @@ The end result will be containerized using Docker and deployed via Fly.io.
 ## Goals
 
 The Primary goal of this project is to gain experience with full-stack development, which emphasis on leveraging modern tech stacks for fast-paced development. Supabase (along with similar services, such as Google's Firebase or Pocketbase) does a lot of the backend configuration behind the scenes, allowing me as a developoer to integrate a backend into my project relatively quickly. This has allowed me to spend more time improving security practices and making the project more robust as a whole.
+
+
+## How to Replicate
+
+In order to replicate this project, one would need to set up and connect:
+--> A supabase cloud database with a matching schema
+    --> A .env.local file with that supabase's API keys
+--> A Cloudinary Account with the API keys added to the .env.local file
+    --> AND the upload preset value changed for each instance of the CldImage component and CldUploadButton component that are used throughout the code
+        --> this should probably just be changed to a global variable to make this easier.. I'll add it to the backlog

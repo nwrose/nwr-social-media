@@ -162,3 +162,28 @@ export async function verifyUsername(username: string | null){
   
     return "GOOD";
 }
+
+
+// function for uploading a post
+export async function handlePostAction(formData: FormData){
+    "use server"
+    
+    const supabase = await createClient();
+
+    const filename = formData.get("filename")?.toString();
+
+    console.log(`\nsaving post with filename: ${filename}\n`);
+    if(!filename){
+        console.log("no filename    : | \n");
+        redirect('/error');
+    }
+
+    // send filename of uploaded post to the DB
+    const {data, error} = await supabase.from("posts").insert({'filename': filename}).select("*").single();
+    if(error){
+        console.log("error adding post to supabase: ", error);
+        redirect('/error');
+    }
+
+    redirect(`/posts/${data.postid.toString()}`);
+}

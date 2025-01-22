@@ -1,5 +1,7 @@
 *This seems more convenient than a more robust backlog app if I'm doing solo development. 
 
+URGENT SECURITY: FIX API KEYS IN ENV BEING PUBLIC --> Unnecessary if all API calls are done from server (client should not call api)
+
 
 Item5: Delete requests
 
@@ -27,3 +29,5 @@ Item 19: Change Password Support
 Item 20: Make image and pfp upload quality max out at a certain level --> big images are more expensive to store
 
 Item 21: Support for more aspect ratios --> square and vertical I guess?
+
+Item 22: Change PFP functionality in edit account

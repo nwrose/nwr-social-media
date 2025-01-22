@@ -59,7 +59,7 @@ const Explore:React.FC<ExploreProps> = ({username, user}) => {
 
     return (
     <>
-        <div className="h-screen flex w-[100%]">
+        <div className="min-h-screen flex w-[100%]">
             <Sidebar username={username}/>
             <div className="flex flex-col items-center w-[60%] bg-gray-50 py-10 px-4 rounded-lg">
                 <h2 className="text-4xl md:text-5xl font-bold text-center text-gray-700 mb-6">

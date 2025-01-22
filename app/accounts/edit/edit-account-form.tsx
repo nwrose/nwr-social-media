@@ -5,8 +5,8 @@ import { createClient } from '@/utils/supabase/client';
 import { Modal } from '@/app/components';
 import { type User } from '@supabase/supabase-js';
 import { handleSignout, verifyUsername } from '@/app/actions';
+import { CldImage } from '@/app/components';
 import { motion } from "framer-motion";
-import Image from 'next/image';
 
 
 
@@ -23,7 +23,7 @@ export default function AccountForm({ user }: { user: User | null }) {
 	const [verifyMsg, setVerifyMsg] = useState<"GOOD" | "SHORT" | "SPACE" | "TAKEN">("GOOD");
 
 	// display values for account
-	const [filename, setFilename] = useState<string | null>(null);
+	const [filename, setFilename] = useState<string>("");
 	const [email, setEmail] = useState<string | null>(null);
 	const [displayFullname, setDisplayFullname] = useState<string | null>(null);
 	const [displayUsername, setDisplayUsername] = useState<string | null>(null);
@@ -101,8 +101,8 @@ export default function AccountForm({ user }: { user: User | null }) {
 				<div className="flex flex-col items-center justify-between bg-white shadow-lg w-[45%] h-5/6 min-h-[400px] rounded-lg p-6">
 					<div className='flex flex-col items-center justify-around space-y-4'>
 						<div className="relative w-40 h-40 rounded-full overflow-hidden border-4 border-blue-400 shadow-2xl">
-							<Image
-								src={`/pfps/${filename || 'default.png'}`}
+							<CldImage
+								src={filename}
 								fill
 								alt="Profile Picture"
 								className="object-cover"

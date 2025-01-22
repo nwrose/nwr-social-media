@@ -26,7 +26,6 @@ body {
   }
 }
 
-
 /*  STUFF FOR PASSWORD VALIDATION ON CREATE ACCOUNT SCREEN */
 #message p {
   padding: 10px 35px;
@@ -54,7 +53,6 @@ body {
   left: -35px;
   content: "&#10006;";
 }
-
 
 .feedImage {
   aspect-ratio: 5/4;

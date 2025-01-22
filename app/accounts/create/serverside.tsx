@@ -3,8 +3,6 @@
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { writeFile } from "fs/promises";
-import path from "path";
 
 
 export async function CreateServerside(formData: FormData) {
@@ -14,15 +12,15 @@ export async function CreateServerside(formData: FormData) {
   const username = formData.get("username") as string;
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
-  const confirmPassword = formData.get("confirmPassword");
-  const pfp = formData.get("pfp") as File;
+  const confirmPassword = formData.get("confirmPassword") as string;
+  const filename = formData.get("pfp-filename") as string;
 
   if(!name || !username || !email || !password){
     console.log("\nerror on retreiving form data!! \n");
     redirect('/error');
   }
-  else if(!pfp){
-    console.log("\nerror while retreiving form file\n");
+  else if(!filename){
+    console.log("\nerror while retreiving form filename\n");
     redirect('/error');
   }
   else if(password != confirmPassword){
@@ -38,20 +36,6 @@ export async function CreateServerside(formData: FormData) {
       console.log("error with signup: ", error);
       redirect('/error');
     }
-  }
-
-  // save file in static images and keep the filename for database
-  const buffer = Buffer.from(await pfp.arrayBuffer());
-  const filename = Date.now() + pfp.name.replaceAll(" ", "_");
-  console.log(`\nsaving pfp with filename: ${filename}\n`);
-  try {
-    await writeFile(
-      path.join(process.cwd(), "public/pfps/" + filename), 
-      buffer
-    ); 
-  } catch (error) {
-    console.log("Error occurred while saving pfp image:\n", error, "\n");
-    redirect("/error");
   }
 
   // send name, username, email, pfp-filename data to users table in DB

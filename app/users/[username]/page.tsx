@@ -59,7 +59,7 @@ export default async function UserPage({ params }: { params: { username: string 
     // display page for user with [username]
     return (
     <>
-    <div className="flex w-full min-h-screen bg-gray-50">
+    <div className="flex flex-col sm:flex-row w-full min-h-screen bg-gray-50">
         {/* Sidebar */}
         <Sidebar username={username} />
 

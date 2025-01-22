@@ -36,9 +36,9 @@ export default async function Home(){
     }
 
     return (
-        <div className="flex w-full min-h-screen bg-gray-100">
+        <div className="flex flex-col sm:flex-row w-full min-h-screen bg-gray-100">
             <Sidebar username={username} />
-            <div className="w-[60%] flex flex-col bg-white shadow-md">
+            <div className="w-[100%] sm:w-[60%] flex flex-col bg-white shadow-md">
                 <div className="p-4 bg-blue-600 text-white text-lg font-bold sticky top-0 z-10">
                     My Feed
                 </div>
@@ -63,7 +63,7 @@ export default async function Home(){
                     ))}
                 </div>
             </div>
-            <div className="w-[20%] bg-gray-50 hidden md:block shadow-lg">
+            <div className="w-[20%] bg-gray-50 hidden sm:block shadow-lg">
                 <div className="w-[20%]">
                 </div>
                 <div className="flex flex-col space-y-5 w-[20%] fixed h-screen p-4">

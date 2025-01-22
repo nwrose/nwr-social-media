@@ -278,8 +278,8 @@ export function Sidebar({ username }: { username: string }) {
     ];
 
   return (
-    <div className="w-[20%] min-w-[200px] z-10">
-        <div className="w-[20%] bg-white shadow-lg h-screen fixed min-w-[200px]">
+    <div className="w-[100%] sm:w-[20%] sm:min-w-[200px] z-10 sm:block">
+        <div className="w-[100%] sm:w-[20%] bg-white shadow-lg sm:h-screen sm:fixed min-w-[200px]">
             <div className="flex flex-col h-full">
                 <div className="flex items-center justify-center h-[100px] text-white text-2xl font-bold">
                     <Link href="/" className="bg-blue-600 rounded-full p-6">

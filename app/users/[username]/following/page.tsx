@@ -39,9 +39,9 @@ export default async function FollowersPage({ params }: { params: { username: st
 
     return(
     <>
-    <div className="flex w-[screen] min-h-screen">
+    <div className="flex flex-col sm:flex-row w-[100%] min-h-screen">
         <Sidebar username={username}/>
-        <div className="flex flex-col items-center w-[60%] bg-gray-50 py-10 px-4 rounded-lg">
+        <div className="flex flex-col items-center w-[100%] sm:w-[60%] bg-gray-50 py-10 px-4 rounded-lg">
             <h2 className="text-4xl md:text-5xl font-bold text-center text-gray-700 mb-6">
                 Following
             </h2>
@@ -58,7 +58,7 @@ export default async function FollowersPage({ params }: { params: { username: st
                 ))}
             </div>
         </div>
-        <div className="flex items-start justify-center w-[20%] py-10 shadow-lg bg-white ">
+        <div className="flex items-center sm:items-start justify-center w-[100%] sm:w-[20%] py-10 shadow-lg bg-white ">
             <Link href={`/users/${params.username}`}>
                 <button className="py-2 px-4 bg-blue-500 text-white font-bold text-sm md:text-base rounded-lg shadow hover:bg-blue-600 hover:shadow-md transition ease-in-out">
                     <p>

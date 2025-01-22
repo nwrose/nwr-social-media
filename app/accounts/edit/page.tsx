@@ -20,7 +20,7 @@ export default async function Account() {
   
   return (
   <>
-    <div className='w-[100%] min-h-screen flex bg-gray-50'>
+    <div className='w-[100%] min-h-screen flex flex-col sm:flex-row bg-gray-50'>
       <Sidebar username={username}/>
       <AccountForm user={user} />
     </div>

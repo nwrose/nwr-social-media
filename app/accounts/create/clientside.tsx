@@ -309,7 +309,7 @@ return (
         <button
             type="submit"
             className={`w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition disabled:bg-blue-300 disabled:cursor-not-allowed`}
-            disabled={!(lowerCheck && upperCheck && numberCheck && lengthCheck && (password === confirmPassword) && !loading && !emailTaken && usernameValid === "GOOD")}
+            disabled={!(pfpUploaded && lowerCheck && upperCheck && numberCheck && lengthCheck && (password === confirmPassword) && !loading && !emailTaken && usernameValid === "GOOD")}
         >
             {loading ? (
                 <div className="flex justify-center items-center space-x-2">

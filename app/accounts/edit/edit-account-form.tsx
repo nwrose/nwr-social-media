@@ -96,8 +96,8 @@ export default function AccountForm({ user }: { user: User | null }) {
 	};
 
 	return (
-		<div className="max-w-5xl mx-auto bg-gray-50 w-full">
-			<div className="flex flex-col sm:flex-row justify-around items-center w-full h-screen">
+		<div className="max-w-5xl mx-auto w-full">
+			<div className="flex flex-col sm:flex-row justify-around items-center w-full min-h-screen">
 				<div className="flex flex-col items-center justify-between bg-white shadow-lg w-[80%] sm:w-[45%] sm:h-5/6 min-h-[400px] rounded-lg p-6 my-4">
 					<div className='flex flex-col items-center justify-around space-y-4'>
 						<div className="relative w-40 h-40 rounded-full overflow-hidden border-4 border-blue-400 shadow-2xl">
@@ -117,7 +117,7 @@ export default function AccountForm({ user }: { user: User | null }) {
 					</div>
 					<button
 						onClick={() => setShowSignOutModal(true)}
-						className="w-full py-2 bg-red-500 text-white rounded shadow-lg hover:bg-red-600 transition"
+						className="w-full py-2 bg-red-500 text-white rounded shadow-lg hover:bg-red-600 transition mt-6"
 					>
 						Sign Out
 					</button>

@@ -235,31 +235,31 @@ export function Comments({
                 <div key={comment.commentid} className="flex items-start space-x-3 px-3 py-1 my-1 bg-gray-100 bg-opacity-65 rounded-lg shadow-sm">
                     <div className="flex flex-col w-full">
                         <div className="flex justify-between w-full">
-                            <div className="flex">
                                 <div>
-                                    <Link href={`/users/${comment.username}`} className="font-bold text-blue-800 hover:underline">
-                                        {comment.username}
-                                    </Link>
+                                    <div className="flex">
+                                        <Link href={`/users/${comment.username}`} className="font-bold text-blue-800 hover:underline">
+                                            {comment.username}
+                                        </Link>
+                                        {(comment.username === my_username) && (
+                                            <div className="">
+                                                <button disabled={isLoadingDelete} className="text-red-600 hover:bg-red-100 rounded mx-1" onClick={() => setShowModal(true)}>
+                                                    🗑️
+                                                </button>
+                                                {showModal &&
+                                                    <Modal 
+                                                        message="Are you sure you would like to delete this comment?"
+                                                        onCancel={() => setShowModal(false)}
+                                                        onConfirm={() => {deleteComment(comment.commentid); setShowModal(false)}}
+                                                        loading={isLoadingDelete}
+                                                    />
+                                                }
+                                            </div>
+                                        )}
+                                    </div>
                                     <div className="text-sm text-gray-500">
                                         {formatDistanceToNow(new Date(comment.created), { addSuffix: true })}
                                     </div>
                                 </div>
-                                {(comment.username === my_username) && (
-                                    <div className="sm:mx-1">
-                                        <button disabled={isLoadingDelete} className="text-red-600 hover:bg-red-100 rounded" onClick={() => setShowModal(true)}>
-                                            🗑️
-                                        </button>
-                                        {showModal &&
-                                            <Modal 
-                                                message="Are you sure you would like to delete this comment?"
-                                                onCancel={() => setShowModal(false)}
-                                                onConfirm={() => {deleteComment(comment.commentid); setShowModal(false)}}
-                                                loading={isLoadingDelete}
-                                            />
-                                        }
-                                    </div>
-                                )}
-                            </div>
                             <div className="text-gray-500 text-sm flex items-end space-x-1">
                                 <span>
                                     <div className="flex flex-col items-center mt-1">
@@ -504,11 +504,12 @@ export function DeletePost({postid, username}: {postid: number, username:string}
     )
 }
 
-export function Post({my_username, postid, likeCount, isLiked, post_data}: {
+export function Post({my_username, postid, likeCount, isLiked, isFeed, post_data}: {
     my_username: string;
     postid: string;
     likeCount: number;
     isLiked: boolean;
+    isFeed: boolean;
     post_data: {
         post_filename: string;
         created: string;
@@ -521,19 +522,34 @@ export function Post({my_username, postid, likeCount, isLiked, post_data}: {
     "use client"
 
     return (
-    <div className="flex flex-col items-center w-full shadow-lg rounded-lg bg-white px-6 pb-6 ">
+    <div className="flex flex-col items-center w-full shadow-lg rounded-lg bg-white px-4 pb-4 sm:px-6 sm:pb-6 ">
         <div className="w-full flex justify-between items-center border-b border-gray-300 ">
-            <Link href={`/users/${post_data.username}`} className="flex items-center space-x-3 font-bold text-blue-800 hover:underline">
-                <div>
-                    <PFP filename={post_data.pfp_filename} />
-                </div>
-                <span>
-                    {post_data.username}
+            <div className="flex flex-col">
+                <Link href={`/users/${post_data.username}`} className="flex items-center space-x-3 font-bold text-blue-800 hover:underline duration-500 ease-in-out">
+                    <div>
+                        <PFP filename={post_data.pfp_filename} />
+                    </div>
+                    <span>
+                        {post_data.username}
+                    </span>
+                </Link>
+            </div>
+            {isFeed ? (
+                <a href={`/posts/${postid}`} className="text-gray-500 h-[100%] flex items-center hover:text-gray-700">
+                        <span className="hidden sm:block mr-2 text-xs sm:text-sm">
+                            {formatDistanceToNow(new Date(post_data.created), { addSuffix: true })}
+                        </span>
+                        <span className="text-3xl sm:text-2xl font-bold flex items-center leading-none ">
+                            ⌕
+                        </span>
+                </a>
+            ) : (
+                <span className="text-gray-500 flex items-center h-[100%]">
+                    <span className="mr-2 text-xs md:text-sm">
+                        {formatDistanceToNow(new Date(post_data.created), { addSuffix: true })}
+                    </span>
                 </span>
-            </Link>
-            <a href={`/posts/${postid}`} className="text-gray-500 text-sm">
-                {formatDistanceToNow(new Date(post_data.created), { addSuffix: true })}
-            </a>
+            )}
         </div>
         <div className="w-full bg-white py-4 mx-auto">
             <div className="relative w-full feedImage">

@@ -46,7 +46,7 @@ export default async function showPost({ params }: { params: { postid: string }}
     <div className="flex flex-col sm:flex-row w-[100%] min-h-screen">
         <Sidebar username={username}/>
         <div className="w-[100%] sm:w-[60%] min-h-screen flex flex-col items-center justify-center py-4 sm:py-2">
-            <Post my_username={username} postid={params.postid} likeCount={likeCount} isLiked={isLiked} post_data={post_data}/>
+            <Post my_username={username} postid={params.postid} likeCount={likeCount} isLiked={isLiked} isFeed={false} post_data={post_data}/>
         </div>
         <div className="w-[100%] sm:w-[20%]"/>
         <div className="w-[100%] sm:w-[20%] flex flex-col items-center sm:fixed sm:top-0 sm:right-0 sm:h-full shadow-lg bg-white px-4">

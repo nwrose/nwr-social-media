@@ -42,14 +42,15 @@ export default async function Home(){
                 <div className="p-4 bg-blue-600 text-white text-lg font-bold sticky top-0 z-10">
                     My Feed
                 </div>
-                <div className="flex flex-col items-center space-y-6 p-6">
+                <div className="flex flex-col items-center py-6 px-0 sm:p-6">
                     {posts.map((post) => (
-                        <div key={post.p_postid} className="w-full max-w-3xl bg-gray-50 p-4 rounded-lg      ">
+                        <div key={post.p_postid} className="w-full max-w-3xl mb-4 bg-gray-50 px-4 pb-4 rounded-lg      ">
                             <Post
                                 my_username={username}
                                 postid={post.p_postid.toString()}
                                 likeCount={post.likes?.length || 0}
                                 isLiked={post.likes?.findIndex((like) => like.username === username) >= 0}
+                                isFeed={true}
                                 post_data={{
                                     post_filename: post.p_filename,
                                     created: post.p_created,

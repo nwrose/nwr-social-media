@@ -1,9 +1,10 @@
 "use client"
 
 import React, { useRef, useEffect, useState } from "react";
-import { handleLike, handleUnlike, handleComment, handleCommentDelete, handleFollow, handleUnfollow, deletePost, deletedRedirect, handlePostAction } from "./actions";
+import { handleCommentLike, handleCommentUnlike, handleLike, handleUnlike, handleComment, handleCommentDelete, handleFollow, handleUnfollow, deletePost, deletedRedirect, handlePostAction } from "./actions";
 import { formatDistanceToNow } from "date-fns";
 import { CldImage as CldImageDefault, CldImageProps, CldUploadButton }  from 'next-cloudinary';
+import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -127,7 +128,7 @@ export function Comments({
     postid,
     my_username,
     }: {
-    in_commentList: { username: string; created: string; text: string; commentid: number }[];
+    in_commentList: { username: string; created: string; text: string; commentid: number; like_count:number; liked_by_user:boolean; }[];
     postid: number;
     my_username: string;
     }) {
@@ -170,6 +171,9 @@ export function Comments({
             created: commentinfo.created,
             text: commentinfo.text,
             commentid: commentinfo.commentid,
+            like_count: 0,
+            liked_by_user: false,
+
         },
         ]);
         setIsLoading(false);
@@ -183,7 +187,42 @@ export function Comments({
         setIsLoadingDelete(false);
     }
 
-    
+    // toggle comment like
+    async function toggleCommentLike(commentid: number, liked_by_user: boolean){
+        console.log("\n Comment list like count:", commentList[0].like_count, commentList[0].liked_by_user, "\n");
+        try {
+
+            console.log(commentList[0].like_count, commentList[0].liked_by_user);
+
+            // then update locally
+            setCommentList((prev) =>
+                prev.map((comment) =>
+                    (comment.commentid === commentid) 
+                    ?   
+                    {
+                        ...comment,
+                        liked_by_user: !liked_by_user,
+                        like_count: (liked_by_user ? (comment.like_count - 1) : (comment.like_count + 1)),
+                    }
+                    : 
+                    comment
+                )
+            );
+
+            console.log(commentList[0].like_count, commentList[0].liked_by_user);
+
+            // if already liked, then unlike, else like  -->  throws error if query errors
+            if(!liked_by_user){
+                await handleCommentLike(commentid);
+            }
+            else{
+                await handleCommentUnlike(commentid);
+            }
+        }
+        catch (error){
+            console.log("error toggling comment like", error);
+        }
+    } 
 
     return (
     <div className="flex flex-col w-full mt-6 bg-white">
@@ -193,16 +232,20 @@ export function Comments({
             style={{ maxHeight: containerHeight }}
         >
             {commentList.map((comment) => (
-            <div key={comment.commentid} className="flex items-start space-x-3 px-3 py-1 my-1 bg-gray-100 bg-opacity-65 rounded-lg shadow-sm">
-                <div className="flex flex-col w-full">
-                    <div className="flex justify-between w-full">
-                        <Link href={`/users/${comment.username}`} className="font-bold text-blue-800 hover:underline">
-                            {comment.username}
-                        </Link>
-                        <div className="text-gray-500 text-sm flex items-end space-x-1">
-                            <span>
+                <div key={comment.commentid} className="flex items-start space-x-3 px-3 py-1 my-1 bg-gray-100 bg-opacity-65 rounded-lg shadow-sm">
+                    <div className="flex flex-col w-full">
+                        <div className="flex justify-between w-full">
+                            <div className="flex">
+                                <div>
+                                    <Link href={`/users/${comment.username}`} className="font-bold text-blue-800 hover:underline">
+                                        {comment.username}
+                                    </Link>
+                                    <div className="text-sm text-gray-500">
+                                        {formatDistanceToNow(new Date(comment.created), { addSuffix: true })}
+                                    </div>
+                                </div>
                                 {(comment.username === my_username) && (
-                                    <div>
+                                    <div className="sm:mx-1">
                                         <button disabled={isLoadingDelete} className="text-red-600 hover:bg-red-100 rounded" onClick={() => setShowModal(true)}>
                                             🗑️
                                         </button>
@@ -210,21 +253,32 @@ export function Comments({
                                             <Modal 
                                                 message="Are you sure you would like to delete this comment?"
                                                 onCancel={() => setShowModal(false)}
-                                                onConfirm={() => deleteComment(comment.commentid)}
+                                                onConfirm={() => {deleteComment(comment.commentid); setShowModal(false)}}
                                                 loading={isLoadingDelete}
                                             />
                                         }
                                     </div>
                                 )}
-                            </span>
-                            <span className="hidden sm:block">
-                                {formatDistanceToNow(new Date(comment.created), { addSuffix: true })}
-                            </span>
+                            </div>
+                            <div className="text-gray-500 text-sm flex items-end space-x-1">
+                                <span>
+                                    <div className="flex flex-col items-center mt-1">
+                                        <button onClick={() => toggleCommentLike(comment.commentid, comment.liked_by_user)}>
+                                            <Image
+                                                src={comment.liked_by_user ? "/util/heart-329.png" : "/util/empty-heart-492.png"}
+                                                alt={comment.liked_by_user ? "Liked" : "Not liked"}
+                                                height={16}
+                                                width={16}
+                                            />
+                                            {comment.like_count || 0}
+                                        </button>
+                                    </div>
+                                </span>
+                            </div>
                         </div>
+                        <p className="flex-1 text-gray-900">{comment.text}</p>
                     </div>
-                    <p className="flex-1 text-gray-700">{comment.text}</p>
                 </div>
-            </div>
             ))}
         </div>
 
@@ -242,10 +296,10 @@ export function Comments({
         
         <form
             onSubmit={(e) => {
-            e.preventDefault();
-            const formData = new FormData(e.currentTarget);
-            postComment(formData);
-            e.currentTarget.reset();
+                e.preventDefault();
+                const formData = new FormData(e.currentTarget);
+                postComment(formData);
+                e.currentTarget.reset();
             }}
             className="flex flex-col mt-4 space-y-3"
         >
@@ -270,6 +324,8 @@ export function Comments({
 
 
 export function Sidebar({ username }: { username: string }) {
+    const [showMenu, setShowMenu] = useState(false);
+
     const Links:{text:string, href:string}[] = [
         {text:"Home", href:"/"},
         {text:"Explore", href:"/explore"},
@@ -277,23 +333,65 @@ export function Sidebar({ username }: { username: string }) {
         {text:`${username}'s Page`, href:`/users/${username}`}
     ];
 
+    const menuVariants = {
+        hidden: { height: 0, opacity: 0 },
+        visible: { height: "auto", opacity: 1, transition: { duration: 0.3, ease: "easeInOut" } }
+    };
+
+    const itemVariants = {
+        hidden: { x: -20, opacity: 0 },
+        visible: (i: number) => ({
+            x: 0,
+            opacity: 1,
+            transition: { delay: i * 0.1, duration: 0.3, ease: "easeOut" }
+        })
+    };
+
   return (
     <div className="w-[100%] sm:w-[20%] sm:min-w-[200px] z-10 sm:block">
         <div className="w-[100%] sm:w-[20%] bg-white shadow-lg sm:h-screen sm:fixed min-w-[200px]">
-            <div className="flex flex-col h-full">
+            {/* Screens larger than a smartphone */}
+            <div className="hidden flex flex-col h-full sm:block">
                 <div className="flex items-center justify-center h-[100px] text-white text-2xl font-bold">
                     <Link href="/" className="bg-blue-600 rounded-full p-6">
                         LOGO
                     </Link>
                 </div>
                 <nav className="flex flex-col">
-                    {Links.map((link) => (
-                        <Link key={link.text} href={link.href} className="hover:bg-blue-200 text-lg text-gray-700 p-4 hover:text-black duration-500 ease-in-out">
+                    {Links.map((link, i) => (
+                        <Link key={i} href={link.href} className="hover:bg-blue-200 text-lg text-gray-700 p-4 hover:text-black duration-500 ease-in-out">
                             {link.text}
                         </Link>
                     ))
                     }
                 </nav>
+            </div>
+
+            {/* Smartphone sized screens */}
+            <div className="block sm:hidden">
+                <div>
+                    <div className="flex items-center justify-between h-[100px]">
+                        <Link href="/" className="bg-blue-600 rounded-full p-6 text-white text-2xl font-bold mx-4">
+                            LOGO
+                        </Link>
+                        <div className="hover:bg-gray-200 rounded mx-4 w-[60px] flex justify-center">
+                            <button className="text-4xl font-bold p-4 text-blue-600" onClick={() => setShowMenu(!showMenu)}>
+                                { showMenu ? "✖" : "☰"}
+                            </button>
+                        </div>
+                    </div>
+                    <motion.div initial="hidden" animate={showMenu ? "visible" : "hidden"} variants={menuVariants} className="overflow-hidden">
+                        <div className="rounded border-2 border-blue-600 mb-4 mt-1 w-[95%] mx-auto"/>
+                        <nav className="flex flex-col items-start w-full">
+                            {Links.map((link) => (
+                                <Link key={link.text} href={link.href} className="hover:bg-blue-200 text-lg text-gray-700 p-4 hover:text-black duration-500 ease-in-out w-full">
+                                    {link.text}
+                                </Link>
+                            ))
+                            }
+                        </nav>
+                    </motion.div>
+                </div>
             </div>
         </div>
     </div>
@@ -331,22 +429,7 @@ export function Usercard({
   }) {
     "use client";
   
-    const [loading, setLoading] = useState(false);
-    const [isFollowing, setIsFollowing] = useState(currently_following);
-  
-    const clientHandleFollow = async () => {
-      setLoading(true);
-      await handleFollow(uuid);
-      setIsFollowing(true);
-      setLoading(false);
-    };
-  
-    const clientHandleUnfollow = async () => {
-      setLoading(true);
-      await handleUnfollow(uuid);
-      setIsFollowing(false);
-      setLoading(false);
-    };
+
   
     return (
       <div className="w-full p-4 bg-white rounded-lg shadow hover:shadow-lg transition-shadow duration-300">
@@ -358,17 +441,7 @@ export function Usercard({
             </div>
           </Link>
           {!isSelf && (
-            <button
-              disabled={loading}
-              onClick={isFollowing ? clientHandleUnfollow : clientHandleFollow}
-              className={`py-2 px-4 rounded font-bold text-sm text-base transition ${
-                isFollowing
-                  ? "bg-gray-200 text-gray-700 border border-gray-300 hover:bg-gray-300"
-                  : "bg-blue-500 text-white hover:bg-blue-600"
-              } disabled:opacity-50 disabled:cursor-not-allowed`}
-            >
-              {loading ? "Processing..." : isFollowing ? "Following" : "Follow"}
-            </button>
+            <FollowUnfollow uuid={uuid} currently_following={currently_following}/>
           )}
         </div>
       </div>
@@ -441,7 +514,7 @@ export function Post({my_username, postid, likeCount, isLiked, post_data}: {
         created: string;
         username: string;
         pfp_filename: string;
-        comments: Array<{ commentid: number; text: string; created: string; username: string }>;
+        comments: Array<{ commentid: number; text: string; created: string; username: string; like_count:number; liked_by_user:boolean;}>;
         likes: Array<{ uuid: string; username: string }>;
     };
 }) {
@@ -498,9 +571,44 @@ export function AspectChange(){
     return (
         <button 
             className="w-full py-2 my-4 bg-blue-500 text-white rounded shadow-lg hover:bg-blue-600 transition"
-            onClick={() => alert("Vertical and square aspect ratio support coming soon!")}
+            onClick={() => alert("Better crop control is in the works!")}
         >
-            Change Aspect Ratio
+            Edit Crop
+        </button>
+    )
+}
+
+export function FollowUnfollow({uuid, currently_following}: {uuid:string, currently_following:boolean}){
+    "use client"
+
+    const [loading, setLoading] = useState(false);
+    const [isFollowing, setIsFollowing] = useState(currently_following);
+  
+    const clientHandleFollow = async () => {
+      setLoading(true);
+      await handleFollow(uuid);
+      setIsFollowing(true);
+      setLoading(false);
+    };
+  
+    const clientHandleUnfollow = async () => {
+      setLoading(true);
+      await handleUnfollow(uuid);
+      setIsFollowing(false);
+      setLoading(false);
+    };
+
+    return (
+        <button
+            disabled={loading}
+            onClick={isFollowing ? clientHandleUnfollow : clientHandleFollow}
+            className={`py-2 px-4 rounded font-bold text-sm text-base transition ${
+            isFollowing
+                ? "bg-gray-200 text-gray-700 border border-gray-300 hover:bg-gray-300"
+                : "bg-blue-500 text-white hover:bg-blue-600"
+            } disabled:opacity-50 disabled:cursor-not-allowed`}
+        >
+            {loading ? "Processing..." : isFollowing ? "Following" : "Follow"}
         </button>
     )
 }

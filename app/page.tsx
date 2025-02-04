@@ -23,7 +23,7 @@ export default async function Home(){
         p_filename: string,
         p_username: string,
         p_pfp_filename: string,
-        comments: Array<{ commentid: number; text: string; created: string; username: string; }>;
+        comments: Array<{ commentid: number; text: string; created: string; username: string; like_count:number; liked_by_user:boolean }>;
         likes: Array<{ uuid: string; username: string; }>;
     }[];
     {

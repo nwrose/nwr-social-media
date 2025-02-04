@@ -1,13 +1,12 @@
+import { redirect } from "next/navigation";
+
 const Error:React.FC = () => {
+    redirect('/');
+
     return (
-        <>
         <div>
-            <p>Error while logging in</p>
-            <a href="/accounts/login/">
-                <button>Return to Login Page</button>
-            </a>
+            Sorry,
         </div>
-        </>
     )
 }
 

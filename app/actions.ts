@@ -187,3 +187,27 @@ export async function handlePostAction(formData: FormData){
 
     redirect(`/posts/${data.postid.toString()}`);
 }
+
+
+export async function handleCommentLike(commentid: number){
+    const supabase = await createClient();
+
+    const {error, status} = await supabase.from("comment_likes").insert({commentid});
+    if(error){
+        throw error;
+    }
+}
+
+export async function handleCommentUnlike(commentid: number){
+    const supabase = await createClient();
+
+    const {data: {user}} = await supabase.auth.getUser();
+    if(!user){
+        redirect("/accounts/login");
+    }
+
+    const {error} = await supabase.from("comment_likes").delete().eq("commentid", commentid).eq("uuid", user.id);
+    if(error){
+        throw(error);
+    }
+}

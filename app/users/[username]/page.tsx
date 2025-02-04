@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
-import { CldUploadButtonClient, Sidebar } from "@/app/components";
+import { CldUploadButtonClient, Sidebar, FollowUnfollow } from "@/app/components";
 import { formatDistanceToNow } from 'date-fns';
 import { CldImage } from '@/app/components';
 import Link from 'next/link';
@@ -31,18 +31,20 @@ export default async function UserPage({ params }: { params: { username: string 
     }
 
     // get user data    
-    const {data, error, status} = await supabase.rpc("get_user_info", {in_username: params.username});
+    const {data, error, status} = await supabase.rpc("get_user_info", {in_username: params.username, in_uuid: user.id});
     if(error && status !== 406){
         console.log("error retrieving user posts for user ", params.username, ": \n", error);
         redirect('/error');
     }
     const user_data: {
+        uuid: string,
         fullname: string, 
         filename: string, 
         created: string, 
         bio: string,
         follower_count: number, 
-        following_count: number,   
+        following_count: number,
+        currently_following: boolean,
         posts: Array<{ filename: string; username: string; created: string; postid: number;}>;
     } = data[0];
     
@@ -69,8 +71,8 @@ export default async function UserPage({ params }: { params: { username: string 
                 {/* User Info Section */}
                 <div className="flex flex-col lg:flex-row items-center justify-around w-full lg:w-5/6 ">
                     {/* Profile Picture and Username */}
-                    <div className="flex flex-col items-center text-center space-y-4">
-                        <div className="relative w-40 h-40 rounded-full border-4 border-blue-400 overflow-hidden">
+                    <div className="flex flex-col items-center text-center">
+                        <div className="relative w-40 h-40 rounded-full border-4 border-blue-400 overflow-hidden m-1">
                             <CldImage 
                                 src={user_data.filename} 
                                 alt={`${params.username}'s profile picture`} 
@@ -79,12 +81,23 @@ export default async function UserPage({ params }: { params: { username: string 
                                 sizes="160px"
                             />
                         </div>
-                        <h1 className="text-2xl font-bold">{params.username}</h1>
-                        {data.uuid === user.id && (
-                            <Link href="/accounts/edit" className="text-blue-500 hover:underline">
-                                Edit Account
-                            </Link>
+                        <h1 className="text-2xl font-bold m-1">{params.username}</h1>
+                        {username === params.username 
+                        ? (
+                            <div>
+                                <Link href="/accounts/edit" className="text-blue-500 hover:underline m-1">
+                                    Edit Account
+                                </Link>
+                                <div className="m-2">
+                                    <CldUploadButtonClient uploadPreset="posts_and_pfps"/>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="m-1">
+                                <FollowUnfollow uuid={user_data.uuid} currently_following={user_data.currently_following}/>
+                            </div>
                         )}
+
                     </div>
                     {/* Full Name and Bio */}
                     <div className="flex flex-col space-y-2 items-center justify-center h-full lg:w-1/2 mb-6">
@@ -93,7 +106,7 @@ export default async function UserPage({ params }: { params: { username: string 
                         <p className="text-gray-700 text-center">{user_data.bio}</p>
 
                         {/* Followers and Following */}
-                        <div className="flex flex-col items-center justify-around h-2/3 space-y-4">
+                        <div className="flex flex-col items-center justify-around h-2/3 ">
                             <Link href={`/users/${params.username}/followers`} className="text-lg font-semibold text-blue-500 hover:bg-gray-100 p-2">
                                 {user_data.follower_count} Followers
                             </Link>
@@ -102,9 +115,6 @@ export default async function UserPage({ params }: { params: { username: string 
                             </Link>
                         </div>
                     </div>
-                    {params.username === username && (
-                        <CldUploadButtonClient uploadPreset="posts_and_pfps"/>
-                    )}
                 </div>
 
             </div>

@@ -23,7 +23,7 @@ export default async function showPost({ params }: { params: { postid: string }}
     }
 
     // get the necessary data for this post
-    const {data, error, status} = await supabase.rpc("get_post_info", {in_postid: Number(params.postid)});
+    const {data, error, status} = await supabase.rpc("get_post_info", {in_postid: Number(params.postid), in_uuid: user.id});
     if(error && status !== 406){
         console.log("error while retrieving post with postid: ", params.postid.toString(), "\n", error);
         redirect('/error');
@@ -33,7 +33,7 @@ export default async function showPost({ params }: { params: { postid: string }}
         created: string,
         username: string,
         pfp_filename: string,
-        comments: Array<{commentid: number; text:string; created:string; username:string;}>,
+        comments: Array<{commentid: number; text:string; created:string; username:string; like_count:number; liked_by_user:boolean;}>,
         likes: Array<{uuid: string; username:string;}>
     } = data?.[0];
 

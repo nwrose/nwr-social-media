@@ -353,8 +353,13 @@ export function Sidebar({ username }: { username: string }) {
             {/* Screens larger than a smartphone */}
             <div className="hidden flex flex-col h-full sm:block">
                 <div className="flex items-center justify-center h-[100px] text-white text-2xl font-bold">
-                    <Link href="/" className="bg-blue-600 rounded-full p-6">
-                        LOGO
+                    <Link href="/" className="bg-blue-600 rounded-2xl py-3">
+                        <Image
+                            src="/util/intrafam-logo.png"
+                            alt="LOGO"
+                            height={64}
+                            width={110}
+                        />
                     </Link>
                 </div>
                 <nav className="flex flex-col">
@@ -371,8 +376,13 @@ export function Sidebar({ username }: { username: string }) {
             <div className="block sm:hidden">
                 <div>
                     <div className="flex items-center justify-between h-[100px]">
-                        <Link href="/" className="bg-blue-600 rounded-full p-6 text-white text-2xl font-bold mx-4">
-                            LOGO
+                        <Link href="/" className="bg-blue-600 rounded-2xl py-3 text-white text-2xl font-bold mx-4">
+                            <Image
+                                src="/util/intrafam-logo.png"
+                                alt="LOGO"
+                                height={100}
+                                width={96}
+                            />
                         </Link>
                         <div className="hover:bg-gray-200 rounded mx-4 w-[60px] flex justify-center">
                             <button className="text-4xl font-bold p-4 text-blue-600" onClick={() => setShowMenu(!showMenu)}>

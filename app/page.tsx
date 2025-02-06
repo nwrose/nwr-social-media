@@ -36,15 +36,15 @@ export default async function Home(){
     }
 
     return (
-        <div className="flex flex-col sm:flex-row w-full min-h-screen bg-gray-100">
+        <div className="flex flex-col sm:flex-row w-full min-h-screen rounded-lg">
             <Sidebar username={username} />
             <div className="w-[100%] sm:w-[60%] flex flex-col bg-white shadow-md">
                 <div className="p-4 bg-blue-600 text-white text-lg font-bold sticky top-0 z-10">
                     My Feed
                 </div>
-                <div className="flex flex-col items-center py-6 px-0 sm:p-6">
+                <div className="flex flex-col items-center">
                     {posts.map((post) => (
-                        <div key={post.p_postid} className="w-full max-w-3xl mb-4 bg-gray-50 px-4 pb-4 rounded-lg      ">
+                        <div key={post.p_postid} className="w-full max-w-3xl bg-gray-50 p-4 pb-10">
                             <Post
                                 my_username={username}
                                 postid={post.p_postid.toString()}

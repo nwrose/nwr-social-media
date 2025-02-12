@@ -33,6 +33,8 @@ export default async function showPost({ params }: { params: { postid: string }}
         created: string,
         username: string,
         pfp_filename: string,
+        fam_id: number,
+        fam_name: string,
         comments: Array<{commentid: number; text:string; created:string; username:string; like_count:number; liked_by_user:boolean;}>,
         likes: Array<{uuid: string; username:string;}>
     } = data?.[0];
@@ -42,7 +44,8 @@ export default async function showPost({ params }: { params: { postid: string }}
     const isLiked: boolean = post_data?.likes?.findIndex((like) => like.username === username) >= 0;
 
 
-    return(<>
+    return(
+    <>
     <div className="flex flex-col sm:flex-row w-[100%] min-h-screen">
         <Sidebar username={username}/>
         <div className="w-[100%] sm:w-[60%] min-h-screen flex flex-col items-center justify-center py-4 sm:py-2">
@@ -61,5 +64,6 @@ export default async function showPost({ params }: { params: { postid: string }}
             }
         </div>
     </div>
-    </>)
+    </>
+    )
 }

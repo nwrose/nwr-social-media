@@ -12,7 +12,7 @@ interface ExploreProps {
     username: string;
 }
 
-const ExploreUsers:React.FC<ExploreProps> = ({username, user}) => {
+const ExploreFams:React.FC<ExploreProps> = ({username, user}) => {
     const [exploreList, setExploreList] = useState<{ username: string; filename: string; uuid: string }[]>([]);
 
     // ensure a proper user is using this component
@@ -87,4 +87,4 @@ const ExploreUsers:React.FC<ExploreProps> = ({username, user}) => {
     </>
     )
 }
-export default ExploreUsers;
+export default ExploreFams;

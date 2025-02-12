@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
-import Explore from "./explore-users";
+import ExploreUsers from "./explore-users";
 
 export default async function ExplorePage(){
     const supabase = await createClient();
@@ -20,7 +20,7 @@ export default async function ExplorePage(){
     return (
     <>
         <div>
-            <Explore username={username} user={user}/>
+            <ExploreUsers username={username} user={user}/>
         </div>
     </>
     )

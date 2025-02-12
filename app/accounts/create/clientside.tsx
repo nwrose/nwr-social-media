@@ -3,7 +3,6 @@
 import React, { useRef, useState } from "react";
 import { validateEmailUser } from "./serverside";
 import { motion } from "framer-motion";
-import { CldImage, CldUploadButtonClient } from "@/app/components";
 import { CldUploadButton } from "next-cloudinary";
 
 interface CreateAccountProps {

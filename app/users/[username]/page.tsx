@@ -8,8 +8,6 @@ import { CldImage } from '@/app/components';
 import Link from 'next/link';
 
 
-
-
 export default async function UserPage({ params }: { params: { username: string }}) {
     const supabase = await createClient();
 
@@ -45,7 +43,8 @@ export default async function UserPage({ params }: { params: { username: string 
         follower_count: number, 
         following_count: number,
         currently_following: boolean,
-        posts: Array<{ filename: string; username: string; created: string; postid: number;}>;
+        shared_fams: Array<{ fam_id: number; name: string; }>,
+        posts: Array<{ filename: string; username: string; created: string; postid: number; }>;
     } = data[0];
     
     // Map posts data to the expected format

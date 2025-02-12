@@ -193,7 +193,7 @@ export async function handleCommentLike(commentid: number){
     const supabase = await createClient();
 
     const {error, status} = await supabase.from("comment_likes").insert({commentid});
-    if(error){
+    if(error && status !== 406){
         throw error;
     }
 }

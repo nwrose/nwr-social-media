@@ -1,6 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
-import { Sidebar, Usercard } from "@/app/components";
+import Sidebar from "@/app/components/UI/Sidebar";
+import Usercard from "@/app/components/Users/Usercard";
 import Link from "next/link";
 
 export default async function FollowersPage({ params }: { params: { username: string }}){

@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
-import { Sidebar, Post } from "@/app/components";
+import Sidebar from "@/app/components/UI/Sidebar";
+import Post from "@/app/components/Posts/Post";
 
 export default async function Home(){
     const supabase = await createClient();
@@ -23,6 +24,8 @@ export default async function Home(){
         p_filename: string,
         p_username: string,
         p_pfp_filename: string,
+        p_fam_id: number,
+        p_fam_name: string,
         comments: Array<{ commentid: number; text: string; created: string; username: string; like_count:number; liked_by_user:boolean }>;
         likes: Array<{ uuid: string; username: string; }>;
     }[];
@@ -56,6 +59,8 @@ export default async function Home(){
                                     created: post.p_created,
                                     username: post.p_username,
                                     pfp_filename: post.p_pfp_filename,
+                                    fam_id: post.p_fam_id,
+                                    fam_name: post.p_fam_name,
                                     comments: post.comments,
                                     likes: post.likes
                                 }}

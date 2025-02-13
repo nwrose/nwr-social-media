@@ -4,7 +4,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
 import { type User } from '@supabase/supabase-js';
-import { Sidebar, Usercard } from '@/app/components'
+import Sidebar from '@/app/components/UI/Sidebar';
+import Usercard from '@/app/components/Users/Usercard';
 
 
 interface ExploreProps {

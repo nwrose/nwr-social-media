@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
-import { Sidebar, Post } from "@/app/components";
+import Sidebar from "@/app/components/UI/Sidebar";
+import Post from "@/app/components/Posts/Post";
 
 export default async function showFamFeed({ params }: { params: { fam_id: string }}){
     const supabase = await createClient();

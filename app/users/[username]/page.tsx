@@ -1,11 +1,13 @@
 "use server"
 
 import { redirect } from "next/navigation";
-import { createClient } from "@/utils/supabase/server";
-import { CldUploadButtonClient, Sidebar, FollowUnfollow } from "@/app/components";
 import { formatDistanceToNow } from 'date-fns';
-import { CldImage } from '@/app/components';
 import Link from 'next/link';
+import { createClient } from "@/utils/supabase/server";
+import { CldUploadButtonClient, CldImage } from '@/app/components/UI/Cld';
+import Sidebar from "@/app/components/UI/Sidebar";
+import FollowUnfollow from "@/app/components/Users/FollowUnfollow"
+import SharedFams from "@/app/components/Users/SharedFams";
 
 
 export default async function UserPage({ params }: { params: { username: string }}) {
@@ -46,6 +48,10 @@ export default async function UserPage({ params }: { params: { username: string 
         shared_fams: Array<{ fam_id: number; name: string; }>,
         posts: Array<{ filename: string; username: string; created: string; postid: number; }>;
     } = data[0];
+
+    // debug
+    console.log(user_data.shared_fams);
+    user_data.shared_fams?.map((fam) => {console.log(fam.name); console.log(" loop ")});
     
     // Map posts data to the expected format
     const postList: {filename: string, postid: number}[] =  user_data.posts?.map(
@@ -83,7 +89,8 @@ export default async function UserPage({ params }: { params: { username: string 
                         <h1 className="text-2xl font-bold m-1">{params.username}</h1>
                         {username === params.username 
                         ? (
-                            <div>
+                            <div className="flex flex-col items-center justify-around">
+                                <SharedFams isSelf={true} shared_fams={user_data.shared_fams}/>
                                 <Link href="/accounts/edit" className="text-blue-500 hover:underline m-1">
                                     Edit Account
                                 </Link>
@@ -92,8 +99,11 @@ export default async function UserPage({ params }: { params: { username: string 
                                 </div>
                             </div>
                         ) : (
-                            <div className="m-1">
-                                <FollowUnfollow uuid={user_data.uuid} currently_following={user_data.currently_following}/>
+                            <div className="flex flex-col items-center justify-around">
+                                <SharedFams isSelf={false} shared_fams={user_data.shared_fams}/>
+                                <div className="m-4">
+                                    <FollowUnfollow uuid={user_data.uuid} currently_following={user_data.currently_following}/>
+                                </div>
                             </div>
                         )}
 

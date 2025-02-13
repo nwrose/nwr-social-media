@@ -1,13 +1,12 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { createClient } from '@/utils/supabase/client';
-import { Modal } from '@/app/components';
 import { type User } from '@supabase/supabase-js';
-import { handleSignout, verifyUsername } from '@/app/actions';
-import { CldImage } from '@/app/components';
 import { motion } from "framer-motion";
-
+import { createClient } from '@/utils/supabase/client';
+import { handleSignout, verifyUsername } from '@/app/actions';
+import { CldImage } from '@/app/components/UI/Cld';
+import Modal from '@/app/components/UI/Modal';
 
 
 export default function AccountForm({ user }: { user: User | null }) {

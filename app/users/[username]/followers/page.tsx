@@ -1,7 +1,9 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
-import { Sidebar, Usercard} from "@/app/components";
 import Link from "next/link";
+import Sidebar from "@/app/components/UI/Sidebar";
+import Usercard from "@/app/components/Users/Usercard";
+
 
 export default async function FollowersPage({ params }: { params: { username: string }}){
     const supabase = await createClient();

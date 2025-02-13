@@ -1,7 +1,7 @@
 import AccountForm from './edit-account-form'
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation';
-import { Sidebar } from '@/app/components';
+import Sidebar from '@/app/components/UI/Sidebar';
 
 export default async function Account() {
   const supabase = await createClient();

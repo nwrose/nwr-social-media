@@ -49,10 +49,6 @@ export default async function UserPage({ params }: { params: { username: string 
         posts: Array<{ filename: string; username: string; created: string; postid: number; }>;
     } = data[0];
 
-    // debug
-    console.log(user_data.shared_fams);
-    user_data.shared_fams?.map((fam) => {console.log(fam.name); console.log(" loop ")});
-    
     // Map posts data to the expected format
     const postList: {filename: string, postid: number}[] =  user_data.posts?.map(
         (post: { filename: string; postid: number }) => ({
@@ -76,7 +72,7 @@ export default async function UserPage({ params }: { params: { username: string 
                 {/* User Info Section */}
                 <div className="flex flex-col lg:flex-row items-center justify-around w-full lg:w-5/6 ">
                     {/* Profile Picture and Username */}
-                    <div className="flex flex-col items-center text-center">
+                    <div className="flex flex-col items-center text-center pb-6">
                         <div className="relative w-40 h-40 rounded-full border-4 border-blue-400 overflow-hidden m-1">
                             <CldImage 
                                 src={user_data.filename} 
@@ -91,10 +87,10 @@ export default async function UserPage({ params }: { params: { username: string 
                         ? (
                             <div className="flex flex-col items-center justify-around">
                                 <SharedFams isSelf={true} shared_fams={user_data.shared_fams}/>
-                                <Link href="/accounts/edit" className="text-blue-500 hover:underline m-1">
+                                <Link href="/accounts/edit" className="text-blue-500 hover:bg-gray-100 p-2 font-semibold rounded">
                                     Edit Account
                                 </Link>
-                                <div className="m-2">
+                                <div className="m-1">
                                     <CldUploadButtonClient uploadPreset="posts_and_pfps"/>
                                 </div>
                             </div>
@@ -115,11 +111,11 @@ export default async function UserPage({ params }: { params: { username: string 
                         <p className="text-gray-700 text-center">{user_data.bio}</p>
 
                         {/* Followers and Following */}
-                        <div className="flex flex-col items-center justify-around h-2/3 ">
-                            <Link href={`/users/${params.username}/followers`} className="text-lg font-semibold text-blue-500 hover:bg-gray-100 p-2">
+                        <div className="flex flex-col items-center justify-around sm:justify-start h-2/3 ">
+                            <Link href={`/users/${params.username}/followers`} className="text-lg font-semibold text-blue-500 hover:bg-gray-100 p-2 rounded">
                                 {user_data.follower_count} Followers
                             </Link>
-                            <Link href={`/users/${params.username}/following`} className="text-lg font-semibold text-blue-500 hover:bg-gray-100 p-2">
+                            <Link href={`/users/${params.username}/following`} className="text-lg font-semibold text-blue-500 hover:bg-gray-100 p-2 rounded">
                                 {user_data.following_count} Following
                             </Link>
                         </div>

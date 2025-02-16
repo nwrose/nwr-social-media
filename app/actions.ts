@@ -220,3 +220,36 @@ export async function handleCommentUnlike(commentid: number){
         throw(error);
     }
 }
+
+
+// insert fam membership into DB for user with uuid and fam with fam_id
+export async function handleFamJoin(fam_id: number){
+    const supabase = await createClient();
+    const {error, status } = await supabase.from("members").insert({fam_id});
+    if(error && status !== 406){
+        throw error;
+    }
+}
+
+
+// verify fam name does not exist in DB already
+export async function checkFamNameAvailable(name: string){
+    const supabase = await createClient();
+    const {data, error, status} = await supabase.from("fams").select("*").eq("name", name).single();
+    if(error && status !== 406){
+        throw error;
+    }
+
+    if(data) return false; 
+    else return true; // data is null (name is available)
+}
+
+
+// insert new fam into DB with name, description, filename
+export async function handleFamCreateAction(formData: FormData){
+    const supabase = await createClient();
+    const {error, status } = await supabase.from("fams").insert({name: formData.get("name"), description: formData.get("description"), filename: formData.get("filename")});
+    if(error && status !== 406){
+        throw error;
+    }
+}

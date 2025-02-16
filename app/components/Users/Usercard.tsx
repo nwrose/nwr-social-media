@@ -20,7 +20,7 @@ export default function Usercard({
     "use client"
 
     return (
-      <div className="w-full p-4 bg-white rounded-lg shadow hover:shadow-lg transition-shadow duration-300">
+      <div className="w-full p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow duration-200">
         <div className="flex items-center justify-between">
           <Link href={`/users/${username}`} className="flex items-center gap-4">
             <PFP filename={filename} />

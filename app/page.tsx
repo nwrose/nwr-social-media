@@ -42,7 +42,7 @@ export default async function Home(){
         <div className="flex flex-col sm:flex-row w-full min-h-screen rounded-lg">
             <Sidebar username={username} />
             <div className="w-[100%] sm:w-[60%] flex flex-col bg-white shadow-md">
-                <div className="p-4 bg-blue-600 text-white text-lg font-bold sticky top-0 z-10">
+                <div className="p-4 sm:py-6 bg-blue-600 text-white text-lg sm:text-2xl font-bold sticky top-0 z-10">
                     My Feed
                 </div>
                 <div className="flex flex-col items-center">

@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import Sidebar from "@/app/components/UI/Sidebar";
 import Post from "@/app/components/Posts/Post";
+import Rightbar from "@/app/components/UI/Rightbar";
 
 export default async function showFamFeed({ params }: { params: { fam_id: string }}){
     const supabase = await createClient();
@@ -42,8 +43,8 @@ export default async function showFamFeed({ params }: { params: { fam_id: string
         <div className="flex flex-col sm:flex-row w-full min-h-screen rounded-lg">
             <Sidebar username={username} />
             <div className="w-[100%] sm:w-[60%] flex flex-col bg-white shadow-md">
-                <div className="p-4 bg-blue-600 text-white text-lg font-bold sticky top-0 z-10">
-                    My Feed
+                <div className="p-4 sm:py-6 bg-blue-600 text-white text-lg sm:text-2xl font-bold sticky top-0 z-10">
+                   Fam Feed 
                 </div>
                 <div className="flex flex-col items-center">
                     {posts.map((post) => (
@@ -69,12 +70,9 @@ export default async function showFamFeed({ params }: { params: { fam_id: string
                     ))}
                 </div>
             </div>
-            <div className="w-[20%] bg-gray-50 hidden sm:block shadow-lg">
-                <div className="w-[20%]">
-                </div>
-                <div className="flex flex-col space-y-5 w-[20%] fixed h-screen p-4">
-                </div>
-            </div>
+            <Rightbar>
+                <div></div>
+            </Rightbar>
         </div>
     );
 }

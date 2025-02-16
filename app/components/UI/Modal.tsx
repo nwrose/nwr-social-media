@@ -6,7 +6,6 @@ export default function Modal({message, onCancel, onConfirm, loading}
     "use client"
     
     return (
-        
         <div className={`fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50`}>
             <div className="bg-white p-6 rounded-lg shadow-gray-500 w-[90%] max-w-md opacity-100">
                 <div className="mb-6 text-center">

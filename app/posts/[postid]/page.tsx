@@ -1,6 +1,11 @@
 import { createClient } from "@/utils/supabase/server"
 import { redirect } from "next/navigation";
-import { Sidebar, DeletePost, Post, CaptionChange, AspectChange } from "@/app/components";
+import Sidebar from "@/app/components/UI/Sidebar";
+import DeletePost from "@/app/components/Posts/DeletePost";
+import Post from "@/app/components/Posts/Post";
+import AspectChange from "@/app/components/Posts/AspectChange";
+import CaptionChange from "@/app/components/Posts/CaptionChange";
+import Rightbar from "@/app/components/UI/Rightbar";
 
 export default async function showPost({ params }: { params: { postid: string }}){
     const supabase = await createClient();
@@ -51,18 +56,19 @@ export default async function showPost({ params }: { params: { postid: string }}
         <div className="w-[100%] sm:w-[60%] min-h-screen flex flex-col items-center justify-center py-4 sm:py-2">
             <Post my_username={username} postid={params.postid} likeCount={likeCount} isLiked={isLiked} isFeed={false} post_data={post_data}/>
         </div>
-        <div className="w-[100%] sm:w-[20%]"/>
-        <div className="w-[100%] sm:w-[20%] flex flex-col items-center sm:fixed sm:top-0 sm:right-0 sm:h-full shadow-lg bg-white px-4">
-            {(post_data.username === username) && 
-            <div className="w-full flex flex-col justify-between sm:min-h-screen py-4">
-                <div className="w-full pb-4">
-                    <CaptionChange/>
-                    <AspectChange/>
+        <Rightbar>
+            <div className="w-[100%] h-full flex flex-col items-center bg-white px-4">
+                {(post_data.username === username) && 
+                <div className="w-full flex flex-col justify-between sm:min-h-screen py-4">
+                    <div className="w-full pb-4">
+                        <CaptionChange/>
+                        <AspectChange/>
+                    </div>
+                    <DeletePost postid={Number(params.postid)} username={post_data.username}/>
                 </div>
-                <DeletePost postid={Number(params.postid)} username={post_data.username}/>
+                }
             </div>
-            }
-        </div>
+        </Rightbar>
     </div>
     </>
     )

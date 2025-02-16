@@ -13,7 +13,8 @@ export default function Sidebar({ username }: { username: string }) {
 
     const Links:{text:string, href:string}[] = [
         {text:"Home", href:"/"},
-        {text:"Explore", href:"/explore"},
+        {text:"Explore Users", href:"/explore"},
+        {text:"Find a Fam", href:"/fams/explore"},
         {text:"Edit Account", href:"/accounts/edit"},
         {text:`${username}'s Page`, href:`/users/${username}`}
     ];
@@ -40,7 +41,7 @@ export default function Sidebar({ username }: { username: string }) {
                 </div>
                 <nav className="flex flex-col">
                     {Links.map((link, i) => (
-                        <Link key={i} href={link.href} className="hover:bg-blue-200 text-lg text-gray-700 p-4 hover:text-black duration-500 ease-in-out">
+                        <Link key={i} href={link.href} className="hover:bg-blue-200 text-lg text-gray-700 p-4 hover:text-black transition duration-500 ease-in-out">
                             {link.text}
                         </Link>
                     ))

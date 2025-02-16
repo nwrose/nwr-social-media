@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import Sidebar from "@/app/components/UI/Sidebar";
 import Usercard from "@/app/components/Users/Usercard";
 import Link from "next/link";
+import Rightbar from "@/app/components/UI/Rightbar";
 
 export default async function FollowersPage({ params }: { params: { username: string }}){
     const supabase = await createClient();
@@ -42,35 +43,42 @@ export default async function FollowersPage({ params }: { params: { username: st
     <>
     <div className="flex flex-col sm:flex-row w-[100%] min-h-screen">
         <Sidebar username={username}/>
-        <div className="flex flex-col items-center w-[100%] sm:w-[60%] bg-gray-50 py-10 px-4 rounded-lg">
-            <h2 className="text-4xl md:text-5xl font-bold text-center text-gray-700 mb-6">
-                Following
-            </h2>
-            <div className="flex flex-col gap-6 w-full">
+        <div className="flex flex-col w-[100%] sm:w-[60%] bg-gray-50 rounded-lg">
+            <div className="p-4 sm:py-6 bg-blue-600 text-white text-lg sm:text-2xl font-bold sticky top-0 z-10 w-full">
+                <div className="h-full w-full flex justify-between">
+                    <span>Following</span>
+                    <Link href={`/users/${params.username}`} className="">◅ Back</Link>
+                </div>
+            </div>
+            <div className="flex flex-col w-full py-2">
                 {followers?.map((follower) => (
-                <Usercard
-                    username={follower.username}
-                    filename={follower.filename}
-                    currently_following={follower.currently_following}
-                    uuid={follower.uuid}
-                    key={follower.username}
-                    isSelf={username === follower.username}
-                />
+                    <div className="w-full px-4 py-2">
+                        <Usercard
+                            username={follower.username}
+                            filename={follower.filename}
+                            currently_following={follower.currently_following}
+                            uuid={follower.uuid}
+                            key={follower.username}
+                            isSelf={username === follower.username}
+                        />
+                    </div>
                 ))}
             </div>
         </div>
-        <div className="flex items-center sm:items-start justify-center w-[100%] sm:w-[20%] py-10 shadow-lg bg-white ">
-            <Link href={`/users/${params.username}`}>
-                <button className="py-2 px-4 bg-blue-500 text-white font-bold text-sm md:text-base rounded-lg shadow hover:bg-blue-600 hover:shadow-md transition ease-in-out">
-                    <p>
-                        Return to 
-                    </p>
-                    <p>
-                        {params.username}&#39;s profile
-                    </p>
-                </button>
-            </Link>
-        </div>
+        <Rightbar>
+            <div className="flex flex-col items-center p-1 hidden">
+                <Link href={`/users/${params.username}`}>
+                    <button className="py-2 px-4 bg-blue-600 text-white font-bold text-sm md:text-base rounded-lg shadow hover:bg-blue-500 hover:shadow-md transition ease-in-out">
+                        <p>
+                            Return to 
+                        </p>
+                        <p>
+                            {params.username}&#39;s profile
+                        </p>
+                    </button>
+                </Link>
+            </div>
+        </Rightbar>
     </div>
     </>
     );

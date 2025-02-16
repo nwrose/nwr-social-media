@@ -12,11 +12,11 @@ export default function SharedFams({ shared_fams, isSelf }: { shared_fams: Array
     }
 
     return (
-        <div className="flex flex-col m-1">
-            <div onClick={toggleShowFams} className="cursor-pointer text-blue-500 hover:underline">
+        <div className="flex flex-col">
+            <div onClick={toggleShowFams} className="cursor-pointer text-blue-500 hover:bg-gray-100 p-2 rounded font-semibold">
                 {showFams
-                    ?  `⬆️ hide ${isSelf ? "my" : "our"} fams ⬆️`
-                    : `⬇️ show ${isSelf ? "my" : "our"} fams ⬇️`
+                    ?  `Hide ${isSelf ? "My" : "Our"} Fams`
+                    :  `View ${isSelf ? "My" : "Our"} Fams`
                 }
             </div>
             <div

@@ -62,7 +62,7 @@ export default async function showPost({ params }: { params: { postid: string }}
                 {(post_data.username === username) && 
                 <div className="w-full flex flex-col justify-between sm:min-h-screen py-4">
                     <div className="w-full pb-4">
-                        <CaptionChange/>
+                        <CaptionChange current_caption={post_data.caption} postid={params.postid}/>
                         <AspectChange/>
                     </div>
                     <DeletePost postid={Number(params.postid)} username={post_data.username}/>

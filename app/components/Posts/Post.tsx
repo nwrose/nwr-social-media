@@ -105,7 +105,7 @@ export default function Post({my_username, postid, likeCount, isLiked, isFeed, p
                     <AnimatePresence>
                         {showHeart && (
                             <motion.img
-                                src="/util/heart-329.png"
+                                src="/util/heart-329-large.png"
                                 alt="Liked"
                                 className="absolute inset-0 m-auto w-20 h-20"
                                 initial={{ scale: 0, opacity: 0 , y: 0 }}

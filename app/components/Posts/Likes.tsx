@@ -22,7 +22,7 @@ export default function Likes({
         <div className="flex justify-between w-full pt-1">
             <motion.button onClick={onLikeToggle} className="pl-2" whileTap={{ scale: 1.2 }} whileHover={{ scale: 1.1 }} transition={{ type: "spring", stiffness: 300 }}>
                 <motion.img
-                    src={in_isLiked ? "/util/heart-329.png" : "/util/empty-heart-492.png"}
+                    src={in_isLiked ? "/util/heart-329-small.png" : "/util/empty-heart-492.png"}
                     alt={in_isLiked ? "Liked" : "Not liked"}
                     height={24}
                     width={24}

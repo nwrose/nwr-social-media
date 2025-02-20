@@ -69,7 +69,6 @@ export async function handlePostAction(formData: FormData){
     }
 
     // send filename of uploaded post to the DB
-    console.log("\nSending post do DB with params: \nuuid:", user.id, "\nfilename:", filename, "\ncaption:", caption, "\nfam_id:", fam_id, '\n');
     const {data, error, status} = await supabase.from("posts").insert({'filename': filename, 'caption': caption, 'fam_id': (fam_id === -1 ? null : fam_id) }).select("postid").single();
     if(error && status !== 406 || !data){
         console.log("error adding post to supabase: ", error);
@@ -273,4 +272,19 @@ export async function handleFamCreateAction(formData: FormData){
     if(error && status !== 406){
         throw error;
     }
+}
+
+
+// update the caption for a given post
+export async function handleUpdateCaption(formData: FormData){
+    const caption = formData.get("caption")?.toString();
+    const postid: number | null = Number(formData.get("postid"));
+
+    const supabase = await createClient();
+    const {error, status} = await supabase.from("posts").update({caption: caption}).eq("postid", postid);
+    if(error && status !== 406){
+        console.log("error updating caption in DB", error);
+    }
+
+    redirect(`/posts/${postid}`);
 }

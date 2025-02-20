@@ -23,7 +23,7 @@ export default function Comments({
     const [showAllComments, setShowAllComments] = useState(false);
     const [hasInteracted, setHasInteracted] = useState(false);
 
-    const maxVisibleComments = 3;
+    const maxVisibleComments = 0;
     const containerRef = useRef<HTMLDivElement>(null);
     const [containerHeight, setContainerHeight] = useState("0px");
 
@@ -110,7 +110,7 @@ export default function Comments({
     } 
 
     return (
-    <div className="flex flex-col w-full sm:mt-2 bg-white">
+    <div className="flex flex-col w-full bg-white">
         <div
             ref={containerRef}
             className={`overflow-hidden ${hasInteracted ? "transition-[max-height] duration-500 ease-in-out" : ""}`}
@@ -158,9 +158,9 @@ export default function Comments({
                 setHasInteracted(true); 
                 setShowAllComments(!showAllComments);
             }}
-            className="text-blue-600 hover:underline self-start mt-2"
+            className="text-blue-600 hover:underline self-start mx-3"
             >
-            {showAllComments ? "Hide comments" : `View ${commentList.length - maxVisibleComments} more comment${commentList.length - maxVisibleComments === 1 ? "" : "s"}`}
+                {showAllComments ? "Hide comments" : `View ${commentList.length - maxVisibleComments} comment${commentList.length - maxVisibleComments === 1 ? "" : "s"}`}
             </button>
         )}
         

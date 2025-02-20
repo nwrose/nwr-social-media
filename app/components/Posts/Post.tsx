@@ -72,7 +72,7 @@ export default function Post({my_username, postid, likeCount, isLiked, isFeed, p
         <div className="flex flex-col items-center w-full shadow-lg rounded-lg bg-white px-4 pb-4 sm:px-6 sm:pb-6 ">
             <div className="w-full flex justify-between items-center border-b border-gray-300 ">
                 <div className="flex flex-col">
-                    <Link href={`/users/${post_data.username}`} className="flex items-center space-x-3 font-bold text-blue-800 hover:underline duration-500 ease-in-out">
+                    <Link href={`/users/${post_data.username}`} className="flex items-center space-x-3 font-bold text-blue-800">
                         <div>
                             <PFP filename={post_data.pfp_filename} />
                         </div>
@@ -136,11 +136,23 @@ export default function Post({my_username, postid, likeCount, isLiked, isFeed, p
                 )}
             </div>
             { (post_data.caption && post_data.caption != "") &&
-                <div className="w-full flex items-start justify-start p-1 bg-red">
-                <Link href={`/users/${post_data.username}`} className="font-bold">
-                    {post_data.username}
-                </Link>
-                : {post_data.caption}
+                <div className="flex items-start px-3 py-1 my-1 w-full">
+                    <div className="flex flex-col w-full">
+                        <div className="flex justify-between w-full">
+                            <div>
+                                <div className="flex">
+                                    <Link href={`/users/${post_data.username}`} className="font-bold text-blue-800">
+                                        {post_data.username}
+                                    </Link>
+                                </div>
+                            </div>
+                            <div className="text-gray-500 text-sm flex items-end space-x-1">
+                            </div>
+                        </div>
+                        <p className="flex-1 text-gray-900">
+                            {post_data.caption}
+                        </p>
+                    </div>
                 </div>
             }
             <Comments in_commentList={post_data.comments || []} postid={Number(postid)} my_username={my_username} />

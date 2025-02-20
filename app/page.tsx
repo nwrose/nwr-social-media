@@ -24,6 +24,7 @@ export default async function Home(){
         p_filename: string,
         p_username: string,
         p_pfp_filename: string,
+        p_caption: string,
         p_fam_id: number,
         p_fam_name: string,
         comments: Array<{ commentid: number; text: string; created: string; username: string; like_count:number; liked_by_user:boolean }>;
@@ -59,6 +60,7 @@ export default async function Home(){
                                     created: post.p_created,
                                     username: post.p_username,
                                     pfp_filename: post.p_pfp_filename,
+                                    caption: post.p_caption,
                                     fam_id: post.p_fam_id,
                                     fam_name: post.p_fam_name,
                                     comments: post.comments,

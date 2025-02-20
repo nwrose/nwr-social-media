@@ -22,8 +22,9 @@ export default function Post({my_username, postid, likeCount, isLiked, isFeed, p
         created: string;
         username: string;
         pfp_filename: string;
-        fam_id: number,
-        fam_name: string,
+        caption: string;
+        fam_id: number;
+        fam_name: string;
         comments: Array<{ commentid: number; text: string; created: string; username: string; like_count:number; liked_by_user:boolean;}>;
         likes: Array<{ uuid: string; username: string }>;
     };
@@ -134,6 +135,14 @@ export default function Post({my_username, postid, likeCount, isLiked, isFeed, p
                     </span>
                 )}
             </div>
+            { (post_data.caption && post_data.caption != "") &&
+                <div className="w-full flex items-start justify-start p-1 bg-red">
+                <Link href={`/users/${post_data.username}`} className="font-bold">
+                    {post_data.username}
+                </Link>
+                : {post_data.caption}
+                </div>
+            }
             <Comments in_commentList={post_data.comments || []} postid={Number(postid)} my_username={my_username} />
         </div>
     );

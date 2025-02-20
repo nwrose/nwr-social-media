@@ -36,6 +36,7 @@ export default async function showPost({ params }: { params: { postid: string }}
     const post_data: {
         post_filename: string,
         created: string,
+        caption: string,
         username: string,
         pfp_filename: string,
         fam_id: number,

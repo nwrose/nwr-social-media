@@ -22,7 +22,6 @@ export default function Comments({
     const [isLoadingDelete, setIsLoadingDelete] = useState(false);
     const [showAllComments, setShowAllComments] = useState(false);
     const [hasInteracted, setHasInteracted] = useState(false);
-    const [showModal, setShowModal] = useState(false);
 
     const maxVisibleComments = 3;
     const containerRef = useRef<HTMLDivElement>(null);
@@ -66,6 +65,7 @@ export default function Comments({
 
     // Delete comment
     async function deleteComment(commentid: number) {
+        if(isLoadingDelete) return;
         setIsLoadingDelete(true);
         await handleCommentDelete(commentid);
         setCommentList((prev) => prev.filter((comment) => comment.commentid !== commentid));
@@ -122,7 +122,7 @@ export default function Comments({
                         <div className="flex justify-between w-full">
                                 <div>
                                     <div className="flex">
-                                        <Link href={`/users/${comment.username}`} className="font-bold text-blue-800 hover:underline">
+                                        <Link href={`/users/${comment.username}`} className="font-bold text-blue-800">
                                             {comment.username}
                                         </Link>
                                     </div>

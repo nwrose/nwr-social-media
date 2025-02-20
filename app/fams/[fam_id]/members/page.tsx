@@ -37,8 +37,14 @@ export default async function ShowMembers({ params }: { params: { fam_id: string
         <div className="flex flex-col w-[100%] sm:w-[60%] bg-gray-50 rounded-lg">
             <div className="p-4 sm:py-6 bg-blue-600 text-white text-lg sm:text-2xl font-bold sticky top-0 z-10 w-full">
                 <div className="h-full w-full flex justify-between">
-                    <span>Family Members</span>
-                    <Link href={`/fams/${params.fam_id}`} className="">◀ Back</Link>
+                    <span className="h-full p-2 flex justify-center items-center">
+                        Family Members
+                    </span>
+                    <span className="h-full flex justify-center items-center">
+                        <Link href={`/fams/${params.fam_id}`} className="hover:bg-blue-500 p-2 hover:text-blue-100 rounded">
+                            ◀ Back
+                        </Link>
+                    </span>
                 </div>
             </div>
             <div className="flex flex-col w-full py-2">

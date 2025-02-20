@@ -14,8 +14,8 @@ export default function Sidebar({ username }: { username: string }) {
     const Links:{text:string, href:string}[] = [
         {text:"Home", href:"/"},
         {text:"Explore Users", href:"/explore"},
-        {text:"Find a Fam", href:"/fams/explore"},
-        {text:"Edit Account", href:"/accounts/edit"},
+        {text:"Find a Family", href:"/fams/explore"},
+        {text:"Account", href:"/accounts/edit"},
         {text:`${username}'s Page`, href:`/users/${username}`}
     ];
 

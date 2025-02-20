@@ -15,8 +15,8 @@ export default function SharedFams({ shared_fams, isSelf }: { shared_fams: Array
         <div className="flex flex-col">
             <div onClick={toggleShowFams} className="cursor-pointer text-blue-500 hover:bg-gray-100 p-2 rounded font-semibold">
                 {showFams
-                    ?  `Hide ${isSelf ? "My" : "Our"} Fams`
-                    :  `View ${isSelf ? "My" : "Our"} Fams`
+                    ?  `Hide ${isSelf ? "My" : "Our"} Families`
+                    :  `View ${isSelf ? "My" : "Our"} Families`
                 }
             </div>
             <div
@@ -24,7 +24,7 @@ export default function SharedFams({ shared_fams, isSelf }: { shared_fams: Array
             >
                 <div className="mt-2">
                     {shared_fams?.map((shared_fam) =>
-                        <a key={shared_fam.fam_id} href={`/fams/${shared_fam.fam_id}`} className="block m-1 p-1 bg-gray-50 rounded-full">
+                        <a key={shared_fam.fam_id} href={`/fams/${shared_fam.fam_id}`} className="flex flex-col items-start m-1 px-2 py-1 bg-gray-50 rounded hover:bg-gray-100">
                             👥 {shared_fam.name}
                         </a>
                     )}

@@ -50,7 +50,7 @@ export default function JoinFam({fam_id, is_member}: {fam_id: number, is_member:
                 : "bg-blue-500 text-white hover:bg-blue-600"
             } ${loading ? "opacity-50" :""}`}
         >
-            {loading ? "Processing..." : isMember ? "Leave Fam" : "Join Fam"}
+            {loading ? "Processing..." : isMember ? "Leave Family" : "Join Family"}
         </button>
     )
 }

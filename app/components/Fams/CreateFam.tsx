@@ -117,13 +117,13 @@ export default function CreateFam({ setShowCreate }: { setShowCreate: React.Disp
         <div className="flex flex-col justify-between p-6 my-4 bg-white rounded-lg shadow-lg space-y-6 w-[80%] sm:w-[70%] md:w-[60%] lg:w-[45%] xl-[30%] sm:h-5/6">
             <div className='space-y-6'>
                 <div className="flex justify-between">
-                    <h2 className="text-xl font-semibold text-gray-700"> Create New Fam </h2>
+                    <h2 className="text-xl font-semibold text-gray-700"> Create New Family </h2>
                     <button className="text-xl font-semibold text-gray-700 hover:bg-red-100 px-1 rounded-sm" onClick={handleCancel}>✖</button>
                 </div>
                 <div className="space-y-4">
                     <div>
                         <label htmlFor="username" className="block text-sm font-semibold text-gray-600">  
-                            Fam Name
+                            Family Name
                         </label>
                         <input
                             id="username"
@@ -141,7 +141,7 @@ export default function CreateFam({ setShowCreate }: { setShowCreate: React.Disp
                                 exit={{ opacity: 0, y: -5 }}
                                 transition={{ duration: 0.3, ease: "easeInOut" }}
                             >
-                                Fam name must be between 2 and 30 characters
+                                Family name must be between 2 and 30 characters
                             </motion.p>
                         )}
                         {(verifyName === "TAKEN") && (
@@ -152,7 +152,7 @@ export default function CreateFam({ setShowCreate }: { setShowCreate: React.Disp
                                 exit={{ opacity: 0, y: -5 }}
                                 transition={{ duration: 0.3, ease: "easeInOut" }}
                             >
-                                Fam name is taken
+                                Family name is taken
                             </motion.p>
                         )}
                     </div>
@@ -175,7 +175,7 @@ export default function CreateFam({ setShowCreate }: { setShowCreate: React.Disp
                                 exit={{ opacity: 0, y: -5 }}
                                 transition={{ duration: 0.3, ease: "easeInOut" }}
                             >
-                                Fam description must be less than 300 characters
+                                Family description must be less than 300 characters
                             </motion.p>
                         )}
                     </div>
@@ -190,14 +190,14 @@ export default function CreateFam({ setShowCreate }: { setShowCreate: React.Disp
                     disabled={loading || verifyName !== "GOOD" || !verifyDesc}
                     className="w-[50%] py-2 bg-blue-500 text-white rounded shadow-lg hover:bg-blue-600 transition disabled:opacity-50 ml-3"
                 >
-                    Create Fam
+                    Create Family
                 </button>
             </div>
             {showModal && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
                     <div className="bg-white p-6 rounded-lg shadow-gray-500 w-[90%] max-w-md">
                         <div className="mb-6 text-center">
-                            Upload a Group Avatar?
+                            Upload a Family Avatar?
                         </div>
                         <div className="flex justify-between">
                             <button

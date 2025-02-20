@@ -63,28 +63,28 @@ export function CldUploadButtonClient({ uploadPreset, fams} : { uploadPreset: st
                 {/* MODAL */}
                 { showModal &&
                     <div className={`fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50`}>
-                        <div className="bg-white px-6 pb-6 rounded-lg shadow-gray-500 w-[90%] max-w-md opacity-100">
-                            <h1 className='font-bold text-2xl text-blue-600 p-6'>
+                        <div className="bg-white px-4 pb-4 sm:px-6 sm:pb-6 rounded-lg shadow-gray-500 w-[90%] max-w-md opacity-100">
+                            <h1 className='font-bold text-xl sm:text-2xl text-blue-600 p-4 sm:p-6'>
                                 New Post
                             </h1>
-                            <div className='bg-gray-100 w-full h-full p-4 text-lg'>
-                                <label className='flex flex-col items-start text-green-600 mb-6 font-semibold'>
+                            <div className='bg-gray-100 w-full h-full p-2 sm:p-4 text-base sm:text-lg rounded'>
+                                <label className='flex flex-col items-start text-green-600 mb-3 sm:mb-6 font-semibold'>
                                     Photo Chosen: ✅
                                 </label>
-                                <label className='flex flex-col items-start mb-8 font-semibold' htmlFor='caption'>
+                                <label className='flex flex-col items-start mb-4 sm:mb-8 font-semibold' htmlFor='caption'>
                                     Add Caption:
                                     <textarea 
                                         id="caption"
                                         name="caption"
-                                        className={`w-full p-2 mt-1 rounded border shadow-sm focus:ring-2 focus:ring-blue-400 font-normal text-base`}
+                                        className={`w-full p-2 mt-1 rounded border shadow-sm focus:ring-2 focus:ring-blue-400 font-normal text-sm sm:text-base`}
                                         rows={4}
                                     />
                                 </label>
-                                <legend className='flex flex-col items-start bg-gray-100 font-semibold text-base mb-8'>
-                                    <h3 className='mb-2 text-lg'>
+                                <legend className='flex flex-col items-start bg-gray-100 font-semibold text-sm sm:text-base mb-4 sm:mb-8'>
+                                    <h3 className='mb-2 text-base sm:text-lg'>
                                         Post To:
                                     </h3>
-                                    <h4>
+                                    <h4 className='mb-1'>
                                         🌎 Public:
                                     </h4>
                                     <label className='font-normal mb-2 hover:bg-gray-200 p-1 w-full flex flex justify-start' htmlFor='public'>
@@ -98,22 +98,24 @@ export function CldUploadButtonClient({ uploadPreset, fams} : { uploadPreset: st
                                         />
                                         &nbsp;Make Post Public
                                     </label>
-                                    <h4>
+                                    <h4 className='mb-1'>
                                         👥 Choose a Fam:
                                     </h4>
-                                    {fams.map((fam) => 
-                                        <label className='font-normal hover:bg-gray-200 p-1 w-full flex flex justify-start' htmlFor={fam.name}>
-                                            <input
-                                                type="radio"
-                                                name="fam_id"
-                                                id={fam.name}
-                                                value={fam.fam_id}
-                                                onChange={() => setSelected(true)}
-                                                required
-                                            />
-                                            &nbsp;{fam.name}
-                                        </label>
-                                    )}
+                                    <div className='flex flex-col items-start max-h-20 overflow-y-auto w-full'>
+                                        {fams.map((fam) => 
+                                            <label className='font-normal hover:bg-gray-200 p-1 w-full flex flex justify-start' htmlFor={fam.name}>
+                                                <input
+                                                    type="radio"
+                                                    name="fam_id"
+                                                    id={fam.name}
+                                                    value={fam.fam_id}
+                                                    onChange={() => setSelected(true)}
+                                                    required
+                                                />
+                                                &nbsp;{fam.name}
+                                            </label>
+                                        )}
+                                    </div>
                                 </legend>
                                 <button 
                                     onClick={handleSubmit}

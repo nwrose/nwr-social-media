@@ -45,10 +45,14 @@ export default async function showFamFeed({ params }: { params: { fam_id: string
             <Sidebar username={username} />
             <div className="w-[100%] sm:w-[60%] flex flex-col bg-white shadow-md">
                 <div className="p-4 sm:py-6 bg-blue-600 text-white text-lg sm:text-2xl font-bold sticky top-0 z-10 flex justify-between">
-                   <span>Family Feed</span>
-                   <Link href={`/fams/${params.fam_id}/members`}>
-                        View Members ▶
-                   </Link>
+                    <span className="h-full p-2 flex justify-center items-center">
+                        Family Feed
+                    </span>
+                    <span className="h-full flex justify-center items-center">
+                        <Link href={`/fams/${params.fam_id}/members`} className="hover:bg-blue-500 p-2 hover:text-blue-100 rounded">
+                            View Members ▶
+                        </Link>
+                    </span>
                 </div>
                 <div className="flex flex-col items-center">
                     {posts.map((post) => (

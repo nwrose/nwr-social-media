@@ -13,7 +13,7 @@ export default function CaptionChange({current_caption, postid }: {current_capti
     return (
     <div>
         <button 
-            className="w-full py-2 my-4 bg-blue-500 text-white rounded shadow-lg hover:bg-blue-600 transition"
+            className="w-full py-2 bg-blue-500 text-white rounded shadow-lg hover:bg-blue-600 transition"
             onClick={() => setShowModal(true)}
         >
             Edit Caption
@@ -40,10 +40,10 @@ export default function CaptionChange({current_caption, postid }: {current_capti
                     />
                     <input id="postid" name='postid' value={postid} type='hidden'/>
                     <div className='text-white font-normal text-lg p-2 flex w-full p-8'>
-                        <button className='bg-gray-600 p-2 rounded w-[50%] mr-1' onClick={() => {setShowModal(false); setUpdatedCaption(current_caption)}}>
+                        <button className='bg-gray-600 hover:bg-gray-700 p-2 rounded w-[50%] mr-1' onClick={() => {setShowModal(false); setUpdatedCaption(current_caption)}}>
                             Cancel
                         </button>
-                        <button type='submit' className='bg-blue-600 p-2 rounded w-[50%] ml-1'>
+                        <button type='submit' className='bg-blue-600 p-2 rounded w-[50%] ml-1 hover:bg-blue-700'>
                             Update Caption
                         </button>
                     </div>

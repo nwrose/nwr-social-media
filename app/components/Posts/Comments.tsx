@@ -124,10 +124,16 @@ export default function Comments({
                                     <div className="flex">
                                         <Link href={`/users/${comment.username}`} className="font-bold text-blue-800">
                                             {comment.username}
+
                                         </Link>
                                     </div>
                                     <div className="text-sm text-gray-500">
                                         {formatDistanceToNow(new Date(comment.created), { addSuffix: true })}
+                                        { comment.username === my_username &&
+                                        <button className="hover:bg-red-200 ml-1 rounded-sm" onClick={() => deleteComment(comment.commentid)}>
+                                            🗑️
+                                        </button>
+                                        }
                                     </div>
                                 </div>
                             <div className="text-gray-500 text-sm flex items-end space-x-1">

@@ -70,6 +70,14 @@ export default async function showPost({ params }: { params: { postid: string }}
                 }
             </div>
         </Rightbar>
+        <div className="block sm:hidden w-full flex p-4">
+            <div className="w-[50%] mr-2">
+                <DeletePost postid={Number(params.postid)} username={post_data.username}/>  
+            </div>
+            <div className="w-[50%] ml-2">
+                <CaptionChange current_caption={post_data.caption} postid={params.postid}/>
+            </div>
+        </div>
     </div>
     </>
     )

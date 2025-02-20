@@ -14,11 +14,11 @@ export default async function Home(){
     const { data, error, status } = await supabase.from('users').select('username').eq('uuid', user.id).single();
     if (error && status !== 406) {
         console.log("Index page error fetching user DB info:", error);
-        redirect('/error');
+        redirect('/accounts/login');
     }
 
     const username: string = data?.username;
-    let posts: {
+    let posts: { 
         p_postid: number,
         p_created: string,
         p_filename: string,

@@ -35,3 +35,9 @@ Item 22: Change PFP functionality in edit account
 Item 23: Add follow/unfollow button and functionality to users/[username] page
 
 Item 24: Take Sticky "My Feed" banner concept and apply it to other pages as well --> especially important when on small screens
+
+Item 25: Fix famcard --> should say "member" when member or smth to that effect.
+
+Item 26: Add date to joining a fam. Can then see "Member since xx-xx-xxxx" or "joined x days ago" statistics
+
+Item 27: Make a little modal for leaving a fam --> this should FEEL like a bigger deal

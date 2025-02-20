@@ -47,7 +47,7 @@ export default async function FollowersPage({ params }: { params: { username: st
             <div className="p-4 sm:py-6 bg-blue-600 text-white text-lg sm:text-2xl font-bold sticky top-0 z-10 w-full">
                 <div className="h-full w-full flex justify-between">
                     <span>Following</span>
-                    <Link href={`/users/${params.username}`} className="">◅ Back</Link>
+                    <Link href={`/users/${params.username}`} className="">◀ Back</Link>
                 </div>
             </div>
             <div className="flex flex-col w-full py-2">

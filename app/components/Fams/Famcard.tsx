@@ -25,7 +25,7 @@ export default function Famcard({
 
     return (
     <div className="m-2 mb-8 bg-white rounded-lg shadow hover:shadow-lg transition-shadow duration-200 flex flex-col items-center justify-between w-[80%] md:w-[40%] xl:w-[27%]">
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center w-full">
             <Link href={`/fams/${fam_data.fam_id}`} className="flex flex-col items-center w-full rounded-t-lg">
                 <div className="text-lg font-bold text-white bg-blue-600 w-full rounded-t-lg p-4 shadow-md text-center">
                     {fam_data.name}

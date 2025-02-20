@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import Link from 'next/link';
 import { createClient } from "@/utils/supabase/server";
 import Sidebar from "@/app/components/UI/Sidebar";
 import Post from "@/app/components/Posts/Post";
@@ -43,8 +44,11 @@ export default async function showFamFeed({ params }: { params: { fam_id: string
         <div className="flex flex-col sm:flex-row w-full min-h-screen rounded-lg">
             <Sidebar username={username} />
             <div className="w-[100%] sm:w-[60%] flex flex-col bg-white shadow-md">
-                <div className="p-4 sm:py-6 bg-blue-600 text-white text-lg sm:text-2xl font-bold sticky top-0 z-10">
-                   Fam Feed 
+                <div className="p-4 sm:py-6 bg-blue-600 text-white text-lg sm:text-2xl font-bold sticky top-0 z-10 flex justify-between">
+                   <span>Family Feed</span>
+                   <Link href={`/fams/${params.fam_id}/members`}>
+                        View Members ▶
+                   </Link>
                 </div>
                 <div className="flex flex-col items-center">
                     {posts.map((post) => (

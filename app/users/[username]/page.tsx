@@ -91,7 +91,7 @@ export default async function UserPage({ params }: { params: { username: string 
                                     Edit Account
                                 </Link>
                                 <div className="m-1">
-                                    <CldUploadButtonClient uploadPreset="posts_and_pfps"/>
+                                    <CldUploadButtonClient uploadPreset="posts_and_pfps" fams={user_data.shared_fams}/> {/* TODO */}
                                 </div>
                             </div>
                         ) : (

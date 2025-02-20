@@ -7,18 +7,22 @@ import { CldUploadFamImage } from "@/app/components/UI/Cld";
 
 export default function CreateFam({ setShowCreate }: { setShowCreate: React.Dispatch<React.SetStateAction<boolean>> }) {
     const [name, setName] = useState("");
-    const [desc, setDesc] = useState("");    
+    const [desc, setDesc] = useState("");
     const [verifyName, setVerifyName] = useState<"GOOD" | "LENGTH" | "TAKEN">("GOOD");
     const [verifyDesc, setVerifyDesc] = useState(true);
+    const [touched, setTouched] = useState(false); // Track if input has been touched
     const [showModal, setShowModal] = useState(false);
     const [loading, setLoading] = useState(false);
 
     // Debounced Name Validation
     useEffect(() => {
+        if (!touched) return; // Prevent validation on initial load
+
         if (name.length < 2 || name.length > 30) {
             setVerifyName("LENGTH");
             return;
         }
+
         const timeoutId = setTimeout(async () => {
             try {
                 const result = await checkFamNameAvailable(name);
@@ -27,8 +31,9 @@ export default function CreateFam({ setShowCreate }: { setShowCreate: React.Disp
                 console.log("Error verifying fam name:", error);
             }
         }, 300); // Debounce time
+
         return () => clearTimeout(timeoutId);
-    }, [name]);
+    }, [name, touched]);
 
     // Description Validation
     useEffect(() => {
@@ -38,7 +43,17 @@ export default function CreateFam({ setShowCreate }: { setShowCreate: React.Disp
     // Handlers
     const handleNameChange = useCallback((value: string) => {
         setName(value);
+        if (value.length > 30) {
+            setVerifyName("LENGTH");
+        }
     }, []);
+
+    const handleNameBlur = useCallback(() => {
+        setTouched(true);
+        if (name.length < 2) {
+            setVerifyName("LENGTH");
+        }
+    }, [name]);
 
     const handleDescChange = useCallback((value: string) => {
         setDesc(value);
@@ -87,13 +102,14 @@ export default function CreateFam({ setShowCreate }: { setShowCreate: React.Disp
         }
     }, [name, desc, setShowCreate]);
 
-    function handleCancel(){
+    function handleCancel() {
         setLoading(true);
         setShowCreate(false);
         setName("");
         setDesc("");
         setVerifyName("GOOD");
         setVerifyDesc(true);
+        setTouched(false);
         setLoading(false);
     }
 
@@ -114,14 +130,15 @@ export default function CreateFam({ setShowCreate }: { setShowCreate: React.Disp
                             type="text"
                             value={name}
                             onChange={(e) => handleNameChange(e.target.value)}
+                            onBlur={handleNameBlur}
                             className={`w-full p-2 mt-1 rounded border shadow-sm focus:ring-2 focus:ring-blue-400 ${verifyName === "GOOD" ? "" : "border-red-500"}`}
                         />
-                        {(verifyName === "LENGTH") && (
+                        {(touched && verifyName === "LENGTH") && (
                             <motion.p
                                 className="text-red-500 text-sm mt-1"
                                 initial={{ opacity: 0, y: -5 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y:-5 }}
+                                exit={{ opacity: 0, y: -5 }}
                                 transition={{ duration: 0.3, ease: "easeInOut" }}
                             >
                                 Fam name must be between 2 and 30 characters
@@ -132,7 +149,7 @@ export default function CreateFam({ setShowCreate }: { setShowCreate: React.Disp
                                 className="text-red-500 text-sm mt-1"
                                 initial={{ opacity: 0, y: -5 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y:-5 }}
+                                exit={{ opacity: 0, y: -5 }}
                                 transition={{ duration: 0.3, ease: "easeInOut" }}
                             >
                                 Fam name is taken
@@ -165,10 +182,7 @@ export default function CreateFam({ setShowCreate }: { setShowCreate: React.Disp
                 </div>
             </div>
             <div className="w-full flex justify-between">
-                <button 
-                    onClick={handleCancel}
-                    className="w-[50%] py-2 bg-gray-400 text-white rounded shadow-lg hover:bg-gray-500 mr-3"
-                >
+                <button onClick={handleCancel} className="w-[50%] py-2 bg-gray-400 text-white rounded shadow-lg hover:bg-gray-500 mr-3">
                     Cancel
                 </button>
                 <button
@@ -179,9 +193,8 @@ export default function CreateFam({ setShowCreate }: { setShowCreate: React.Disp
                     Create Fam
                 </button>
             </div>
-
             {showModal && (
-                <div className={`fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50`}>
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
                     <div className="bg-white p-6 rounded-lg shadow-gray-500 w-[90%] max-w-md">
                         <div className="mb-6 text-center">
                             Upload a Group Avatar?

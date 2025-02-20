@@ -1,6 +1,7 @@
 "use client"
 
 const ErrorPage:React.FC = () => {
+
     return (
         <>
             <p>  Error :P </p>

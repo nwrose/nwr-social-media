@@ -54,23 +54,29 @@ export async function handlePostAction(formData: FormData){
     "use server"
     
     const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if(!user){
+        redirect('/accounts/login');
+    }
 
     const filename = formData.get("filename")?.toString();
+    const caption = formData.get("caption")?.toString();
+    const fam_id: number | null = Number(formData.get("fam_id"));
 
-    console.log(`\nsaving post with filename: ${filename}\n`);
     if(!filename){
         console.log("no filename    : | \n");
         redirect('/error');
     }
 
     // send filename of uploaded post to the DB
-    const {data, error} = await supabase.from("posts").insert({'filename': filename}).select("*").single();
-    if(error){
+    console.log("\nSending post do DB with params: \nuuid:", user.id, "\nfilename:", filename, "\ncaption:", caption, "\nfam_id:", fam_id, '\n');
+    const {data, error, status} = await supabase.from("posts").insert({'filename': filename, 'caption': caption, 'fam_id': (fam_id === -1 ? null : fam_id) }).select("postid").single();
+    if(error && status !== 406 || !data){
         console.log("error adding post to supabase: ", error);
         redirect('/error');
     }
 
-    redirect(`/posts/${data.postid.toString()}`);
+    redirect(`/posts/${data.postid}`);
 }
 
 
@@ -215,8 +221,8 @@ export async function handleCommentUnlike(commentid: number){
         redirect("/accounts/login");
     }
 
-    const {error} = await supabase.from("comment_likes").delete().eq("commentid", commentid).eq("uuid", user.id);
-    if(error){
+    const {error, status} = await supabase.from("comment_likes").delete().eq("commentid", commentid).eq("uuid", user.id);
+    if(error && status !== 406){
         throw(error);
     }
 }
@@ -226,6 +232,21 @@ export async function handleCommentUnlike(commentid: number){
 export async function handleFamJoin(fam_id: number){
     const supabase = await createClient();
     const {error, status } = await supabase.from("members").insert({fam_id});
+    if(error && status !== 406){
+        throw error;
+    }
+}
+
+
+// delete fam membership from DB for current user and fam with fam_id
+export async function handleFamLeave(fam_id: number){
+    const supabase = await createClient();
+    const {data: {user}} = await supabase.auth.getUser();
+    if(!user){
+        redirect("/accounts/login");
+    }
+
+    const {error, status} = await supabase.from("members").delete().eq("fam_id", fam_id).eq("uuid", user.id);
     if(error && status !== 406){
         throw error;
     }
